@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Zensino</string>
+    <string name="network_error">Errore di rete, controllare la connessione</string>
+    <string name="request_error">HTTP %d - Errore di request</string>
+    <string name="unauthorized_error">HTTP %d - Non autorizzato</string>
+    <string name="not_found_error">HTTP %d - Non trovato</string>
+    <string name="internal_server_error">HTTP %d - Errore interno server</string>
+    <string name="timeout">Timeout</string>
+    <string name="username">Nome utente</string>
+    <string name="default_username">CareComfort</string>
+    <string name="password">Password</string>
+    <string name="default_password">care2020</string>
+    <string name="login">Accedi</string>
+    <string name="username_invalid">Nome utente non valido</string>
+    <string name="password_invalid">Password non valida</string>
+    <string name="error">Errore</string>
+    <string name="notification_channel_id">notification_channel_zensi_status</string>
+    <string name="notification_status_message">Collegato a Zensi</string>
+    <string name="report_false_alarm">Report false alarm</string>
+    <string name="Snooze">snooze</string>
+    <string name="ok">OK</string>
+    <string name="popup_title">%s (%d)</string>
+    <string name="logout">Logout</string>
+
+</resources>

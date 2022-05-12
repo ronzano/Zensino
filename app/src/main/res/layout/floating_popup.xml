@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_popup"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="8dp"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            tools:text="Sensor NAME" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="2"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="12:34" />
+
+        <LinearLayout
+            android:id="@+id/buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <GridLayout
+                android:id="@+id/buttonsRow1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:alignmentMode="alignBounds"
+                android:columnCount="2"
+                android:columnOrderPreserved="true"
+                android:rowCount="1"
+                android:rowOrderPreserved="true"
+                android:useDefaultMargins="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSnooze"
+                    android:layout_width="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:text="@string/Snooze"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    tools:visibility="visible" />
+                <!--                style="?attr/materialButtonOutlinedStyle"-->
+
+                <!--            android:background="@drawable/button_selector"-->
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonDismiss"
+                    android:layout_width="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:text="@string/ok"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+
+                <!--            style="?attr/materialButtonOutlinedStyle"-->
+                <!--        android:background="@drawable/button_selector"-->
+            </GridLayout>
+
+
+            <GridLayout
+                android:id="@+id/buttonFalseAlarmContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:alignmentMode="alignBounds"
+                android:columnCount="2"
+                android:columnOrderPreserved="true"
+                android:rowCount="1"
+                android:rowOrderPreserved="true"
+                android:useDefaultMargins="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonFalseAlarm"
+                    android:layout_width="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:text="@string/report_false_alarm"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+                <!--                style="?attr/materialButtonOutlinedStyle"-->
+
+                <!--            android:background="@drawable/button_selector"-->
+
+            </GridLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>

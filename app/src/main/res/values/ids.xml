@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="debounce" type="id" />
+    <item name="test_button" type="id" />
+</resources>

@@ -1,0 +1,105 @@
+{
+    "result": "OK",
+    "app-parametes": {
+        "service_polling_sec": 2,
+        "polling_sec": 2,
+        "disconnect_sec": 120,
+        "snooze_sec": 300,
+        "telemetry_sec": 900,
+        "disconnect_service_sec": 600
+    },
+    "plugins": [
+        "notify_user_alert_actions",
+        "allow_inapp_chart",
+        "notify_user_actions"
+    ],
+    "user": "CareComfort",
+    "dept_name": "test_dept",
+    "phone_polling_sec": 5,
+    "disconnection_timeout_sec": 120,
+    "num_sensors": 2,
+    "alert-time-labels": [
+        "NO",
+        "15s,3m,5m",
+        "15m",
+        "30m"
+    ],
+    "alert-time-colors": [
+        "#92d150",
+        "#00b0f0,#007bff,#007bff",
+        "#ffa500",
+        "#c72114"
+    ],
+    "button-status-colors": {
+        "undetected": "#a7a6a6",
+        "occupied": "#92d150",
+        "before-first": "#00b0f0",
+        "before-second": "#00b0f0",
+        "before-third": "#00b0f0",
+        "before-fourth": "#00b0f0",
+        "before-fifth": "#ffa500",
+        "after-fifth": "#c72114",
+        "retaring": "#eb2dee"
+    },
+    "data": {
+        "Care Comfort": {
+            "1": {
+                "display_name": "RANDOM",
+                "pad_id": "x",
+                "pad_id_label": "573827",
+                "latest": "2022-04-27T08:39:02.469062+00:00",
+                "min_since_latest": 13776,
+                "min_since_latest_above_th": 17775,
+                "min_since_latest_below_threshold": 13776,
+                "latest_alert_triggered_timestamp": "2022-04-27T08:36:54.516016Z",
+                "status": "occupied",
+                "value": 0,
+                "value2": 0,
+                "alert_triggered": false,
+                "_TEST": "%RANDBOOL%",
+                "monitor_on": true,
+                "time_slot_1": true,
+                "time_slot_2": true,
+                "time_slot_3": true,
+                "time_slot_4": true,
+                "time_slot_5": true,
+                "alert_time_idx": 0,
+                "alert_time_sec": -1,
+                "alert-time-labels": [
+                    "NO",
+                    "15s,3m,5m",
+                    "15m",
+                    "30m"
+                ]
+            },
+            "2": {
+                "display_name": "Fisso OFF",
+                "pad_id": "y",
+                "pad_id_label": "ede56b",
+                "latest": "2022-04-19T09:12:26.486051+00:00",
+                "min_since_latest": 25262,
+                "min_since_latest_above_th": 0,
+                "min_since_latest_below_threshold": 25265,
+                "latest_alert_triggered_timestamp": "2022-05-10T20:58:13.690057Z",
+                "status": "undetected",
+                "value": 228,
+                "value2": 215,
+                "alert_triggered": false,
+                "monitor_on": true,
+                "time_slot_1": true,
+                "time_slot_2": true,
+                "time_slot_3": true,
+                "time_slot_4": true,
+                "time_slot_5": true,
+                "alert_time_idx": 0,
+                "alert_time_sec": -1,
+                "alert-time-labels": [
+                    "NO",
+                    "15s,3m,5m",
+                    "15m",
+                    "30m"
+                ]
+            }
+        }
+    }
+}
