@@ -18,5 +18,18 @@
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="app.ronzano.zensino.ui.fragments.DashboardFragment"
-        android:label="DashboardFragment" />
+        android:label="DashboardFragment">
+        <action
+            android:id="@+id/action_dashboardFragment_to_sensorPreferenceFragment"
+            app:destination="@id/sensorPreferenceFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sensorPreferenceFragment"
+        android:name="app.ronzano.zensino.ui.fragments.SensorPreferenceFragment"
+        android:label="SensorPreferenceFragment">
+        <argument
+            android:name="sensor"
+            app:argType="app.ronzano.zensino.webservices.models.StatusResponse$SensorData"
+            app:nullable="false" />
+    </fragment>
 </navigation>

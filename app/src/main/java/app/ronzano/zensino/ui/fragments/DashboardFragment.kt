@@ -16,9 +16,10 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.findNavController
 import app.ronzano.zensino.R
 import app.ronzano.zensino.databinding.FragmentDashboardBinding
-import app.ronzano.zensino.extensions.debounceClickListener
 import app.ronzano.zensino.extensions.loge
+import app.ronzano.zensino.extensions.navigate
 import app.ronzano.zensino.services.StatusService
+import app.ronzano.zensino.ui.components.ISensorTileListener
 import app.ronzano.zensino.ui.components.SensorTile
 import app.ronzano.zensino.ui.viewmodels.MainViewModel
 import app.ronzano.zensino.webservices.Constants
@@ -167,6 +168,15 @@ class DashboardFragment : Fragment() {
                                         bottom = context.resources.getDimensionPixelSize(R.dimen.margin_half),
                                         right = context.resources.getDimensionPixelSize(R.dimen.margin_half)
                                     )
+                                    listener = object : ISensorTileListener {
+                                        override fun onLongClick(sensor: StatusResponse.SensorData) {
+                                            navigate(
+                                                DashboardFragmentDirections.actionDashboardFragmentToSensorPreferenceFragment(
+                                                    sensor
+                                                )
+                                            )
+                                        }
+                                    }
                                 }
                             }
                             sensorTile.sensor = sensor

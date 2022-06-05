@@ -80,10 +80,6 @@ class StatusService : Service() {
             .setContentIntent(activityPendingIntent)
             .setShowWhen(true)
 
-        // Set the Channel ID for Android O.
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                builder.setChannelId(getString(R.string.notification_channel_id)) // Channel ID
-//            }
         builder.build()
     }
 
@@ -203,7 +199,6 @@ class StatusService : Service() {
             if (_alertPopup == null) {
                 _alertPopup = FloatingPopupView(applicationContext)
             }
-            log("show floating")
             _alertPopup!!.show(sensor)
             wakeUp()
         }
@@ -250,10 +245,6 @@ class StatusService : Service() {
 
         private const val EXTRA_STARTED_FROM_NOTIFICATION = "${P}}.extra.started_from_notification"
 
-
-        /**
-         * The identifier for the notification displayed for the foreground service.
-         */
         private const val NOTIFICATION_ID = 68987774
     }
 }

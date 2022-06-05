@@ -19,6 +19,7 @@ import app.ronzano.zensino.webservices.models.StatusResponse.SensorData
 class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
     private var binding: SensorTileBinding = SensorTileBinding.inflate(LayoutInflater.from(context))
     private var _layout: ViewGroup = binding.viewContainer
+    var listener: ISensorTileListener? = null
 
     var _sensor: SensorData? = null
 
@@ -37,6 +38,13 @@ class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
         binding.viewContainer.setOnClickListener {
             binding.time.isVisible = !binding.time.isVisible
         }
+        binding.viewContainer.setOnLongClickListener {
+            sensor?.let {
+                listener?.onLongClick(it)
+            }
+            true
+        }
+
     }
 
     fun updateBlink(blink: Boolean) {
@@ -45,7 +53,8 @@ class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
             binding.dataContainer.background = anim
             anim?.start()
         } else {
-            binding.dataContainer.background = ContextCompat.getDrawable(context, R.drawable.sensor_not_triggered)
+            binding.dataContainer.background =
+                ContextCompat.getDrawable(context, R.drawable.sensor_not_triggered)
         }
     }
 
@@ -95,5 +104,10 @@ class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
         }
         return context.getString(R.string.empty_value)
     }
+
+}
+
+interface ISensorTileListener {
+    fun onLongClick(sensor: SensorData)
 
 }

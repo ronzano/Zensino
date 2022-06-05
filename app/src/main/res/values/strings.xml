@@ -53,6 +53,49 @@
     <string name="cancel">Cancel</string>
     <string name="calibrate">Calibrate</string>
     <string name="logo_hospital">Hospital Logo</string>
+    <string name="title_displayname">Display name</string>
+    <string name="title_monitor_enabled">Monitor</string>
 
+    <!-- Strings related to Settings -->
+
+    <string name="key_sound" translatable="false">sound</string>
+    <string name="key_vibrate" translatable="false">vibrate</string>
+    <string name="key_logout" translatable="false">logout</string>
+    <string name="key_account" translatable="false">account</string>
+    <string name="key_num_columns" translatable="false">num_columns</string>
+    <string name="key_token" translatable="false">token</string>
+    <string name="key_mode" translatable="false">mode</string>
+    <string name="key_username" translatable="false">username</string>
+    <string name="key_password" translatable="false">password</string>
+    <string name="key_sensor_number" translatable="false">sensor_number</string>
+    <string name="key_sensor_displayname" translatable="false">sensor_displayname</string>
+    <string name="key_monitor_enabled" translatable="false">monitor_enabled</string>
+    <string name="key_morning" translatable="false">morning</string>
+    <string name="key_lunch" translatable="false">lunch</string>
+    <string name="key_afternoon" translatable="false">afternoon</string>
+    <string name="key_evening" translatable="false">evening</string>
+    <string name="key_night" translatable="false">night</string>
+    <string name="key_cat_time_slot" translatable="false">time_slot</string>
+    <string name="key_cat_sensor_options" translatable="false">sensor_options</string>
+    <string name="title_cat_time_slot">Time slot</string>
+    <string name="summary_morning" translatable="false">07:30 – 11:30</string>
+    <string name="summary_lunch" translatable="false">11:30 – 13:30</string>
+    <string name="summary_afternoon" translatable="false">13:30 – 18:30</string>
+    <string name="summary_evening" translatable="false">18:30 – 21:30</string>
+    <string name="summary_night" translatable="false">21:30 – 07:30</string>
+    <string name="key_threshold" translatable="false">threshold</string>
+    <string name="key_snooze" translatable="false">popup_snooze_2</string>
+    <string name="key_extra_sensor" translatable="false">sensor</string>
+    <string name="key_extra_alert_time_labels" translatable="false">alert_time_labels</string>
+    <string name="key_extra_alert_time_colors" translatable="false">alert_time_colors</string>
+    <string name="key_logo" translatable="false">logo</string>
+    <string name="key_timeslots" translatable="false">timeslots</string>
+    <string name="title_morning">Morning</string>
+    <string name="title_lunch">Lunch</string>
+    <string name="title_afternoon">Afternoon</string>
+    <string name="title_evening">Evening</string>
+    <string name="title_night">Night</string>
+    <string name="title_cat_sensor_options">Sensor options</string>
+    <string name="title_cat_alert_trigger">Alert trigger</string>
 
 </resources>
