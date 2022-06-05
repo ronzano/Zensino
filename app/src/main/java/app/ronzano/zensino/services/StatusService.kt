@@ -158,6 +158,7 @@ class StatusService : Service() {
 //                        log(response)
                         val intent = Intent(ACTION_STATUS_UPDATE)
                         intent.putExtra(EXTRA_STATUS, response)
+                        intent.putExtra(EXTRA_DATE, Date().time)
                         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
                     } catch (e: Exception) {
                         loge(e)
@@ -242,6 +243,7 @@ class StatusService : Service() {
         const val ACTION_GENERIC = "${P}.action.generic"
 
         const val EXTRA_STATUS = "${P}.extra.status"
+        const val EXTRA_DATE = "${P}.extra.date"
         const val EXTRA_ACTION = "${P}.extra.action"
         const val EXTRA_SENSOR_ID = "${P}.extra.sensor_id"
         const val EXTRA_SNOOZED_UNTIL = "${P}.extra.snoozed_until"

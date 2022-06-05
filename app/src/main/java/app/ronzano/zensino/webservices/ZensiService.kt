@@ -2,6 +2,7 @@ package app.ronzano.zensino.webservices
 
 import app.ronzano.zensino.webservices.models.LoginRequest
 import app.ronzano.zensino.webservices.models.LoginResponse
+import app.ronzano.zensino.webservices.models.LogoResponse
 import app.ronzano.zensino.webservices.models.StatusResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -19,5 +20,10 @@ interface ZensiService {
     suspend fun status(
         @Header("Authorization") token: String,
     ): StatusResponse
+
+    @GET("api/v2/logo/")
+    suspend fun logo(
+        @Header("Authorization") token: String,
+    ): LogoResponse
 
 }

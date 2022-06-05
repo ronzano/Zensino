@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/buttons"
+        android:layout_alignParentTop="true"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/calibrate_step_error_title"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="#F12731"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="false"
+                android:minHeight="200dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_error_mark" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/calibrate_step_error_description"
+                android:textAlignment="center"
+                android:textColor="#F12731"
+                android:textSize="16sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="12dp" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:text="@string/calibrate_step_error_important"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/buttonEnd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/ok"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+            style="?android:attr/borderlessButtonStyle"/>
+<!--        android:background="@drawable/button_selector"-->
+    </LinearLayout>
+</RelativeLayout>

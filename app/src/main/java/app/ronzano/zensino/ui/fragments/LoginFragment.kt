@@ -52,7 +52,7 @@ class LoginFragment : Fragment() {
         checkFloatingWindow()
 
         binding.buttonLogin.debounceClickListener { onLoginClick() }
-//        if (first++ == 0) onLoginClick()
+        if (first++ == 0) onLoginClick()
 
     }
 

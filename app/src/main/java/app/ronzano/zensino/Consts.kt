@@ -6,4 +6,10 @@ object Consts {
     const val DEFAULT_DISCONNECTION_TIMEOUT_SECS: Long = 120
     const val DEFAULT_SERVICE_TELEMETRY_INTERVAL_SECS: Long = 15 * 60
     const val DEFAULT_SNOOZE_SECS: Long = 5 * 60
+
+    /*STATUS*/
+    const val STATUS_OCCUPIED = "occupied"
+    const val STATUS_UNDETECTED = "undetected"
+    const val STATUS_STANDBY = "standby"
+
 }

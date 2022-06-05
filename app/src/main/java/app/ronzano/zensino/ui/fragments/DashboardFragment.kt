@@ -11,22 +11,31 @@ import androidx.core.view.ViewCompat.generateViewId
 import androidx.core.view.updateMargins
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.findNavController
 import app.ronzano.zensino.R
 import app.ronzano.zensino.databinding.FragmentDashboardBinding
 import app.ronzano.zensino.extensions.debounceClickListener
+import app.ronzano.zensino.extensions.loge
 import app.ronzano.zensino.services.StatusService
 import app.ronzano.zensino.ui.components.SensorTile
 import app.ronzano.zensino.ui.viewmodels.MainViewModel
+import app.ronzano.zensino.webservices.Constants
+import app.ronzano.zensino.webservices.ZensiRepository
 import app.ronzano.zensino.webservices.models.StatusResponse
-import com.google.android.material.snackbar.Snackbar
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import kotlinx.coroutines.launch
+import java.text.DateFormat
+import java.util.*
 
 class DashboardFragment : Fragment() {
 
     private lateinit var binding: FragmentDashboardBinding
     private val mainModel: MainViewModel by activityViewModels()
     private val _statusReceiver = StatusReceiver()
+    private var _statusService: StatusService? = null
 
 //    private val model: DashboardViewModel by viewModels()
 
@@ -44,9 +53,25 @@ class DashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.buttonLogout.debounceClickListener { logout() }
-//        renderSensors()
-//        observeError(model.error)
+//        binding.buttonLogout.debounceClickListener { logout() }
+        val repo = ZensiRepository(Constants.API_ENDPOINT)
+
+        lifecycleScope.launch {
+            //TODO: preload cached logo
+            mainModel.token?.let { t ->
+                try {
+                    val logoUrl = repo.logo(t).logo
+                    Glide
+                        .with(this@DashboardFragment)
+                        .load(Constants.API_ENDPOINT + logoUrl)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(binding.logoHospital);
+                } catch (e: Exception) {
+                    loge(e)
+                }
+            }
+        }
     }
 
     private fun logout() {
@@ -55,7 +80,6 @@ class DashboardFragment : Fragment() {
         findNavController().setGraph(R.navigation.nav_graph_main)
     }
 
-    private var _statusService: StatusService? = null
 
     private val _statusServiceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -63,9 +87,6 @@ class DashboardFragment : Fragment() {
             _statusService = binder.service
             _statusService?.setToken(mainModel.token)
             _statusService?.startService(Intent(context, StatusService::class.java))
-
-//            _statusService?.setCurrentOds(Pair(meteringModel.selectedOdsDettaglio.value!!.idOds, meteringModel.selectedOdsDettaglio.value!!.id))
-//            _statusService?.startReading()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -110,10 +131,20 @@ class DashboardFragment : Fragment() {
 
     private inner class StatusReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
+//            Snackbar.make(requireView(), status.toString(), Snackbar.LENGTH_SHORT).show()
             val status = intent.getParcelableExtra<StatusResponse>(StatusService.EXTRA_STATUS)
-            Snackbar.make(requireView(), status.toString(), Snackbar.LENGTH_SHORT).show()
-            renderSensors(status)
+            val date = intent.getLongExtra(StatusService.EXTRA_DATE, 0)
+            updateUI(status, Date(date));
         }
+    }
+
+    private fun updateUI(status: StatusResponse?, date: Date) {
+        binding.user.text = status?.user ?: getString(R.string.no_user)
+        val df = DateFormat.getDateTimeInstance()         //TODO: usare extension
+        val lastDate = df.format(date)         //TODO: usare extension
+        binding.lastUpdate.text = getString(R.string.last_update, lastDate)
+
+        renderSensors(status)
     }
 
     private fun renderSensors(status: StatusResponse?) {
@@ -138,7 +169,8 @@ class DashboardFragment : Fragment() {
                                     )
                                 }
                             }
-                            sensorTile.displayName = sensor.displayName
+                            sensorTile.sensor = sensor
+//                            sensorTile.displayName = sensor.displayName
                             status.buttonStatusColors?.get(sensor.status)?.let {
                                 sensorTile.setStatusColor(
                                     it
@@ -150,12 +182,5 @@ class DashboardFragment : Fragment() {
             }
         }
     }
-
-//    compassView = CompassView(this)
-//    compassView?.run {
-//        id = generateViewId()
-//    }
-//    binding.root.addView(compassView, params)
-//    compassView?.let { setItemConstraints(binding.root, it.id, binding.north.id) }
 
 }

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginBottom="8dp"
+    android:background="@color/white"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+    tools:context=".ui.MainActivity">
+
+    <LinearLayout
+        android:id="@+id/dots"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/dot1"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="First step"
+            android:src="@drawable/dot_selected"
+            android:tag="1" />
+
+        <ImageView
+            android:id="@+id/dot2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="Second step"
+            android:src="@drawable/dot"
+            android:tag="2" />
+
+        <ImageView
+            android:id="@+id/dot3"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="Third step"
+            android:src="@drawable/dot"
+            android:tag="3" />
+
+        <ImageView
+            android:id="@+id/dot4"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="Forth step"
+            android:src="@drawable/dot"
+            android:tag="4" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dots" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

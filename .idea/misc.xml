@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/drawable/background_popup.xml" value="0.182" />
+        <entry key="app/src/main/res/drawable/blink.xml" value="0.203" />
+        <entry key="app/src/main/res/drawable/dot.xml" value="0.203" />
+        <entry key="app/src/main/res/drawable/dot_selected.xml" value="0.203" />
+        <entry key="app/src/main/res/drawable/ic_bed_top_down.xml" value="0.2025" />
+        <entry key="app/src/main/res/drawable/ic_check_mark.xml" value="0.2025" />
+        <entry key="app/src/main/res/drawable/ic_error_mark.xml" value="0.2025" />
+        <entry key="app/src/main/res/drawable/ic_sensor_under_mattress.xml" value="0.2025" />
+        <entry key="app/src/main/res/drawable/sensor_not_triggered.xml" value="0.203" />
+        <entry key="app/src/main/res/drawable/sensor_triggered.xml" value="0.203" />
+        <entry key="app/src/main/res/layout/fragment_calibrate_1.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/fragment_calibrate_2.xml" value="0.19479166666666667" />
+        <entry key="app/src/main/res/layout/fragment_calibrate_3.xml" value="0.19479166666666667" />
+        <entry key="app/src/main/res/layout/fragment_calibrate_4.xml" value="0.19479166666666667" />
+        <entry key="app/src/main/res/layout/fragment_calibrate_end.xml" value="0.19479166666666667" />
+        <entry key="app/src/main/res/layout/fragment_calibrate_error.xml" value="0.19479166666666667" />
+        <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.2077082316080729" />
+        <entry key="app/src/main/res/layout/fragment_login.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/fragment_recalibrate.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/sensor_tile.xml" value="0.23958333333333334" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Embedded JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

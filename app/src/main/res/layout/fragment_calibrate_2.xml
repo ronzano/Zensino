@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/buttons"
+        android:layout_alignParentTop="true"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/calibrate_step2_title"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textStyle="bold"  />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:adjustViewBounds="false"
+                android:minHeight="100dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_empty_bed" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/calibrate_step2_description"
+                android:textAlignment="center"
+                android:textSize="16sp" />
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/textView3"-->
+            <!--        android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_marginStart="32dp"-->
+            <!--            android:layout_marginTop="32dp"-->
+            <!--            android:layout_marginEnd="32dp"-->
+            <!--            android:layout_marginBottom="32dp"-->
+            <!--            android:text="Important:\nPlease leave the sensor plugged into the electricity socket during Calibration! "-->
+            <!--            android:textAlignment="center"-->
+            <!--            android:textAllCaps="false"-->
+            <!--            android:textColor="#0AB260"-->
+            <!--            android:textSize="18sp"-->
+            <!--            android:textStyle="bold" />-->
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/buttonPrevious"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            android:text="@string/previous"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+            style="?android:attr/borderlessButtonStyle"/>
+<!--        android:background="@drawable/button_selector"-->
+
+        <Button
+            android:id="@+id/buttonNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:text="@string/ok"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+            style="?android:attr/borderlessButtonStyle"/>
+<!--        android:background="@drawable/button_selector"-->
+    </LinearLayout>
+</RelativeLayout>

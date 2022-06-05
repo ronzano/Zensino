@@ -14,4 +14,8 @@ class ZensiRepository(baseUrl: String) : BaseRepository() {
     suspend fun status(
         token: String
     ) = apiCall { client.status("Token $token") }
+
+    suspend fun logo(
+        token: String
+    ) = apiCall { client.logo("Token $token") }
 }
