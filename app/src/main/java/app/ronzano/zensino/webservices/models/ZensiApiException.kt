@@ -12,4 +12,10 @@ class ZensiApiException(
     override fun getLocalizedMessage(): String {
         return message
     }
+
+    override fun toString(): String {
+        return "ZensiApiException(message='$message', cause=$cause, httpStatusCode=$httpStatusCode)"
+    }
+
+
 }

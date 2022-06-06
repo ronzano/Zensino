@@ -31,8 +31,8 @@ class RecalibrateFragment : Fragment(), ICalibrateListener {
     }
 
     private fun showStep(step: Int) {
-        binding.dots.setVisibility(if (step <= 3) View.VISIBLE else View.GONE)
-        for (i in 0 until binding.dots.getChildCount()) {
+        binding.dots.visibility = if (step <= 3) View.VISIBLE else View.GONE
+        for (i in 0 until binding.dots.childCount) {
             val src: Int = if (i > step) R.drawable.dot else R.drawable.dot_selected
             (binding.dots.getChildAt(i) as ImageView).setImageResource(src)
         }

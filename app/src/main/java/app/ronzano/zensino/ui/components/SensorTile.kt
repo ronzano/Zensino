@@ -21,13 +21,13 @@ class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
     private var _layout: ViewGroup = binding.viewContainer
     var listener: ISensorTileListener? = null
 
-    var _sensor: SensorData? = null
+    private var _sensor: SensorData? = null
 
     var sensor: SensorData?
         get() = _sensor
         set(value) {
             _sensor = value
-            binding.displayName.setText(value?.displayName)
+            binding.displayName.text = value?.displayName
             binding.time.text = getElapsedTime()
             updateBlink(value?.alertTriggered == true)
         }
@@ -47,7 +47,7 @@ class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
 
     }
 
-    fun updateBlink(blink: Boolean) {
+    private fun updateBlink(blink: Boolean) {
         if (blink) {
             val anim = ContextCompat.getDrawable(context, R.drawable.blink) as AnimationDrawable?
             binding.dataContainer.background = anim
@@ -62,12 +62,12 @@ class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
     fun setStatusColor(colorCode: String) {
         val color = Color.parseColor(colorCode)
         val bg: Int = R.drawable.background_sensor_tile
-        binding.viewContainer.setBackground(ContextCompat.getDrawable(context, bg))
-        val l: Drawable = binding.viewContainer.getBackground()
+        binding.viewContainer.background = ContextCompat.getDrawable(context, bg)
+        val l: Drawable = binding.viewContainer.background
         l.setColorFilter(color, PorterDuff.Mode.MULTIPLY)
     }
 
-    fun getElapsedTime(): String {
+    private fun getElapsedTime(): String {
         _sensor?.let { s ->
 
             if (s.status == Consts.STATUS_UNDETECTED) {

@@ -7,6 +7,7 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import app.ronzano.zensino.webservices.models.Telemetry
+import kotlin.math.roundToInt
 
 object TelemetryManager {
     @Synchronized
@@ -19,8 +20,8 @@ object TelemetryManager {
     private fun getWifiStrength(context: Context): Int {
         val wifiManager: WifiManager =
             context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val wifiInfo: WifiInfo = wifiManager.getConnectionInfo()
-        return WifiManager.calculateSignalLevel(wifiInfo.getRssi(), 100)
+        val wifiInfo: WifiInfo = wifiManager.connectionInfo
+        return WifiManager.calculateSignalLevel(wifiInfo.rssi, 100)
     }
 
     private fun getBatteryLevel(context: Context): Int {
@@ -30,7 +31,7 @@ object TelemetryManager {
         if (batteryStatus != null) {
             val level: Int = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
             val scale: Int = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, 1)
-            percentage = Math.round(level / scale.toFloat() * 100)
+            percentage = (level / scale.toFloat() * 100).roundToInt()
         }
         return percentage
     }

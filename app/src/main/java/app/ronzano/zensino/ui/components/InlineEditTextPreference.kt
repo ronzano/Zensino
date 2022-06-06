@@ -7,9 +7,8 @@ import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceViewHolder
 import app.ronzano.zensino.R
 
-class InlineEditTextPreference : EditTextPreference {
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
-    constructor(context: Context?) : super(context) {}
+class InlineEditTextPreference(context: Context?, attrs: AttributeSet?) :
+    EditTextPreference(context, attrs) {
 
     override fun onAttached() {
         super.onAttached()
@@ -24,8 +23,8 @@ class InlineEditTextPreference : EditTextPreference {
         super.onBindViewHolder(holder)
         val textViewTitle: TextView? = holder?.findViewById(R.id.textViewTitle) as TextView?
         val textViewValue: TextView? = holder?.findViewById(R.id.textViewValue) as TextView?
-        textViewTitle?.setText(title)
-        textViewValue?.setText(text)
+        textViewTitle?.text = title
+        textViewValue?.text = text
     }
 
 //    override fun onBindView(rootView: View) {

@@ -9,9 +9,8 @@ import androidx.preference.PreferenceViewHolder
 import androidx.preference.SwitchPreference
 import app.ronzano.zensino.R
 
-class InlineSwitchPreference : SwitchPreference {
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
-    constructor(context: Context?) : super(context) {}
+class InlineSwitchPreference(context: Context?, attrs: AttributeSet?) :
+    SwitchPreference(context, attrs) {
 
     override fun onAttached() {
         super.onAttached()

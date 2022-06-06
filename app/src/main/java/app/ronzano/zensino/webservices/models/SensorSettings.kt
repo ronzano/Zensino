@@ -2,7 +2,7 @@ package app.ronzano.zensino.webservices.models
 
 import com.google.gson.annotations.SerializedName
 
-class SensorSettings(@SerializedName("pad_id") private val padId: String) {
+class SensorSettings(@SerializedName("pad_id") val padId: String) {
     @SerializedName("display_name")
     var displayName: String? = null
 

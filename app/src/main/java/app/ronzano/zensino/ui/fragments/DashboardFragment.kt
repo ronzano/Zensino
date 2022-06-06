@@ -67,7 +67,7 @@ class DashboardFragment : Fragment() {
                         .load(Constants.API_ENDPOINT + logoUrl)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(binding.logoHospital);
+                        .into(binding.logoHospital)
                 } catch (e: Exception) {
                     loge(e)
                 }
@@ -135,7 +135,7 @@ class DashboardFragment : Fragment() {
 //            Snackbar.make(requireView(), status.toString(), Snackbar.LENGTH_SHORT).show()
             val status = intent.getParcelableExtra<StatusResponse>(StatusService.EXTRA_STATUS)
             val date = intent.getLongExtra(StatusService.EXTRA_DATE, 0)
-            updateUI(status, Date(date));
+            updateUI(status, Date(date))
         }
     }
 

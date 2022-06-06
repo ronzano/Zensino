@@ -11,7 +11,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import app.ronzano.zensino.R
 
-class ThresholdPreference : Preference, View.OnClickListener {
+class ThresholdPreference(context: Context?, attrs: AttributeSet?) : Preference(context, attrs), View.OnClickListener {
     private val buttons = arrayOf<Button?>(null, null, null, null)
     private val cycles = arrayOf<View?>(null, null, null, null)
     private var mSelected = 0
@@ -19,16 +19,6 @@ class ThresholdPreference : Preference, View.OnClickListener {
     private var mAlertTimeLabels: ArrayList<String>? = null
     private var mAlertTimeColors: ArrayList<String>? = null
     private var mAlertTimeLC: ArrayList<AlertTimeButton>? = null
-
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
-    }
-
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
-    constructor(context: Context?) : super(context) {}
 
     override fun onAttached() {
         super.onAttached()
@@ -178,7 +168,7 @@ class ThresholdPreference : Preference, View.OnClickListener {
         mAlertTimeColors = alertTimeColors
     }
 
-    private inner class AlertTimeButton internal constructor(
+    private inner class AlertTimeButton(
         val button: Button?,
         val cycle: View?
     ) {
@@ -189,7 +179,7 @@ class ThresholdPreference : Preference, View.OnClickListener {
         }
     }
 
-    private inner class AlertTime internal constructor(
+    private inner class AlertTime(
         val index: Int,
         val label: String,
         val color: String
