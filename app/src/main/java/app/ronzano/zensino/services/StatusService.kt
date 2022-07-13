@@ -37,7 +37,6 @@ class StatusService : Service() {
     private val scope = CoroutineScope(Dispatchers.IO + _job)
     private val repo by lazy { ZensiRepository(Constants.API_ENDPOINT) }
     private var _alertPopup: FloatingPopupView? = null
-    private var _lastStatus: StatusResponse? = null
     private var _pollingIntervalSecs = Consts.DEFAULT_POLLING_INTERVAL_SECS
 
     private var _sensorsMap = HashMap<String, SensorState>()
@@ -58,27 +57,29 @@ class StatusService : Service() {
     }
 
     private val _notification: Notification? by lazy {
-        val intent = Intent(this, StatusService::class.java)
-
-        intent.putExtra(EXTRA_STARTED_FROM_NOTIFICATION, true)
+//        val intent = Intent(this, StatusService::class.java)
+//        intent.putExtra(EXTRA_STARTED_FROM_NOTIFICATION, true)
 
         val activityIntent = Intent(this, MainActivity::class.java)
         activityIntent.action = Intent.ACTION_MAIN
         activityIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
-        val intentFlags =
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        val activityPendingIntent = PendingIntent.getActivity(
-            this, 0,
-            activityIntent, intentFlags
-        )
+        val intentFlags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        val activityPendingIntent = PendingIntent.getActivity(this, 0, activityIntent, intentFlags)
+
+        val stopIntent =
+            Intent(this, StatusService::class.java).also { it.putExtra(EXTRA_STOP, 1) }
+        val stopPendingIntent =
+            PendingIntent.getService(this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
+
         val builder = NotificationCompat.Builder(this, getString(R.string.notification_channel_id))
             .setContentTitle(getString(R.string.notification_status_message))
             .setOngoing(true)
             .setPriority(NotificationManagerCompat.IMPORTANCE_MAX)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(activityPendingIntent)
             .setShowWhen(true)
+            .addAction(R.drawable.ic_stop, getString(R.string.stop), stopPendingIntent)
 
         builder.build()
     }
@@ -105,11 +106,15 @@ class StatusService : Service() {
 
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         log("Service started")
-        startForeground(NOTIFICATION_ID, _notification)
-        startStatusPolling()
 
+        if (intent?.getIntExtra(EXTRA_STOP, 0) == 1) {
+            stop()
+        } else {
+            startForeground(NOTIFICATION_ID, _notification)
+            startStatusPolling()
+        }
         return START_NOT_STICKY
     }
 
@@ -123,6 +128,7 @@ class StatusService : Service() {
                     try {
                         val response = repo.status(token)
                         _lastStatus = response
+                        _lastUpdateTime = Date().time
                         //Update polling interval
                         _pollingIntervalSecs =
                             response.appParameters?.pollingSecs ?: _pollingIntervalSecs
@@ -153,8 +159,8 @@ class StatusService : Service() {
                         }
 //                        log(response)
                         val intent = Intent(ACTION_STATUS_UPDATE)
-                        intent.putExtra(EXTRA_STATUS, response)
-                        intent.putExtra(EXTRA_DATE, Date().time)
+                        intent.putExtra(EXTRA_STATUS, _lastStatus)
+                        intent.putExtra(EXTRA_DATE, _lastUpdateTime)
                         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
                     } catch (e: Exception) {
                         loge(e)
@@ -233,18 +239,27 @@ class StatusService : Service() {
     enum class ACTIONS { SNOOZE }
 
     companion object {
+        fun getLastStatus(): Pair<StatusResponse?, Long?> {
+            return Pair(_lastStatus, _lastUpdateTime)
+        }
+
         private const val P = ContactsContract.Directory.PACKAGE_NAME
         const val ACTION_STATUS_UPDATE = "${P}.action.status_update"
         const val ACTION_GENERIC = "${P}.action.generic"
 
+        const val EXTRA_STOP = "${P}.extra.stop"
         const val EXTRA_STATUS = "${P}.extra.status"
         const val EXTRA_DATE = "${P}.extra.date"
         const val EXTRA_ACTION = "${P}.extra.action"
         const val EXTRA_SENSOR_ID = "${P}.extra.sensor_id"
         const val EXTRA_SNOOZED_UNTIL = "${P}.extra.snoozed_until"
 
-        private const val EXTRA_STARTED_FROM_NOTIFICATION = "${P}}.extra.started_from_notification"
+//        private const val EXTRA_STARTED_FROM_NOTIFICATION = "${P}}.extra.started_from_notification"
 
         private const val NOTIFICATION_ID = 68987774
+
+        private var _lastStatus: StatusResponse? = null
+        private var _lastUpdateTime: Long? = null
+
     }
 }

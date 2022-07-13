@@ -1,57 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <app.ronzano.zensino.ui.components.InlineEditTextPreference
         android:key="@string/key_sensor_displayname"
         android:maxLength="5"
         android:persistent="false"
         android:summary="-"
-        android:title="@string/title_displayname" />
+        android:title="@string/title_displayname"
+        app:iconSpaceReserved="false" />
     <SwitchPreference
         android:key="@string/key_monitor_enabled"
         android:persistent="false"
+        android:title="@string/title_monitor_enabled"
+        app:iconSpaceReserved="false" />
 
-        android:title="@string/title_monitor_enabled" />
+        <PreferenceCategory
+            android:key="@string/key_cat_time_slot"
+            android:title="@string/title_cat_time_slot"
+            app:iconSpaceReserved="false">
 
-    <PreferenceCategory
-        android:key="@string/key_cat_time_slot"
-        android:title="@string/title_cat_time_slot">
+            <app.ronzano.zensino.ui.components.InlineSwitchPreference
+                android:defaultValue="true"
+                android:key="@string/key_morning"
+                android:persistent="false"
+                android:summary="@string/summary_morning"
+                android:title="@string/title_morning" />
+            <app.ronzano.zensino.ui.components.InlineSwitchPreference
+                android:defaultValue="true"
+                android:key="@string/key_lunch"
+                android:persistent="false"
+                android:summary="@string/summary_lunch"
+                android:title="@string/title_lunch" />
+            <app.ronzano.zensino.ui.components.InlineSwitchPreference
+                android:defaultValue="true"
+                android:key="@string/key_afternoon"
+                android:persistent="false"
+                android:summary="@string/summary_afternoon"
+                android:title="@string/title_afternoon" />
+            <app.ronzano.zensino.ui.components.InlineSwitchPreference
+                android:defaultValue="true"
+                android:key="@string/key_evening"
+                android:persistent="false"
+                android:summary="@string/summary_evening"
+                android:title="@string/title_evening" />
+            <app.ronzano.zensino.ui.components.InlineSwitchPreference
+                android:defaultValue="true"
+                android:key="@string/key_night"
+                android:persistent="false"
+                android:summary="@string/summary_night"
+                android:title="@string/title_night" />
+        </PreferenceCategory>
 
-        <app.ronzano.zensino.ui.components.InlineSwitchPreference
-            android:defaultValue="true"
-            android:key="@string/key_morning"
-            android:persistent="false"
-            android:summary="@string/summary_morning"
-            android:title="@string/title_morning" />
-        <app.ronzano.zensino.ui.components.InlineSwitchPreference
-            android:defaultValue="true"
-            android:key="@string/key_lunch"
-            android:persistent="false"
-            android:summary="@string/summary_lunch"
-            android:title="@string/title_lunch" />
-        <app.ronzano.zensino.ui.components.InlineSwitchPreference
-            android:defaultValue="true"
-            android:key="@string/key_afternoon"
-            android:persistent="false"
-            android:summary="@string/summary_afternoon"
-            android:title="@string/title_afternoon" />
-        <app.ronzano.zensino.ui.components.InlineSwitchPreference
-            android:defaultValue="true"
-            android:key="@string/key_evening"
-            android:persistent="false"
-            android:summary="@string/summary_evening"
-            android:title="@string/title_evening" />
-        <app.ronzano.zensino.ui.components.InlineSwitchPreference
-            android:defaultValue="true"
-            android:key="@string/key_night"
-            android:persistent="false"
-            android:summary="@string/summary_night"
-            android:title="@string/title_night" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/title_cat_alert_trigger">
-        <app.ronzano.zensino.ui.components.ThresholdPreference
-            android:key="@string/key_threshold"
-            android:persistent="false" />
-    </PreferenceCategory>
+        <PreferenceCategory
+            android:title="@string/title_cat_alert_trigger"
+            app:iconSpaceReserved="false">
+            <app.ronzano.zensino.ui.components.ThresholdPreference
+                android:key="@string/key_threshold"
+                android:persistent="false" />
+        </PreferenceCategory>
 </PreferenceScreen>

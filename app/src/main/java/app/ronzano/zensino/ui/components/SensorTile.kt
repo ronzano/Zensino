@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -15,6 +16,8 @@ import app.ronzano.zensino.Consts
 import app.ronzano.zensino.R
 import app.ronzano.zensino.databinding.SensorTileBinding
 import app.ronzano.zensino.webservices.models.StatusResponse.SensorData
+import java.text.SimpleDateFormat
+import java.util.*
 
 class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
     private var binding: SensorTileBinding = SensorTileBinding.inflate(LayoutInflater.from(context))
@@ -26,6 +29,7 @@ class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
     var sensor: SensorData?
         get() = _sensor
         set(value) {
+            //Update view here
             _sensor = value
             binding.displayName.text = value?.displayName
             binding.time.text = getElapsedTime()
@@ -34,10 +38,13 @@ class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
 
     init {
         addView(_layout)
+        //TODO - BEGIN
         //TODO: serve davvero nascosto? non conviene mostrarlo sempre?
-        binding.viewContainer.setOnClickListener {
-            binding.time.isVisible = !binding.time.isVisible
-        }
+        binding.time.isVisible = true
+//        binding.viewContainer.setOnClickListener {
+//            binding.time.isVisible = !binding.time.isVisible
+//        }
+        //TODO - END
         binding.viewContainer.setOnLongClickListener {
             sensor?.let {
                 listener?.onLongClick(it)
@@ -103,6 +110,146 @@ class SensorTile(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
             }
         }
         return context.getString(R.string.empty_value)
+    }
+
+    fun updateMonitoringStatus(
+        alertTimeColors: ArrayList<String>,
+        timeSlots: Array<Array<String>>
+    ) {
+        sensor?.let { s ->
+            if (s.monitorOn == true) {
+                // MICMOD00962019. Do not draw the alert ball on the button if there is no alert set or if undetected
+                // the check on "standby" should be redundant, but left nonetheless
+                if (s.alertTimeIdx == 0 || s.status.equals("standby", ignoreCase = true)) {
+                    binding.threshold.isVisible = false
+                    return
+                }
+
+                binding.threshold.setBackgroundResource(R.drawable.circle);
+                if (!isInMonitoredHours(timeSlots)|| s.isUndetected() == true) {
+                        binding.threshold.setBackgroundResource(R.drawable.circle_monitor_disabled);
+                    } else {
+
+                        /*The alert ball must behave like this:
+                            If monitoring is off there is no alert ball.
+                            If monitoring is on and the timeslot is blocked the alert ball is white
+                            If monitoring is on and the timeslot is not blocked the alert ball takes the color passed by status ONLY if alert_time_idx != 0.
+                            If alert time idx is 0 it means there is no alert set so the ball must not be drawn
+
+                            If zensi is disconnected the alert ball must be white
+                        */
+                        if (s.alertTimeIdx < alertTimeColors.size) {
+                            val color = Color.parseColor(alertTimeColors.get(s.alertTimeIdx))
+                            val l: LayerDrawable =
+                                binding.threshold.getBackground().mutate() as LayerDrawable
+                            l.getDrawable(1).setColorFilter(color, PorterDuff.Mode.MULTIPLY)
+                        }
+
+                    }
+                binding.threshold.isVisible = true
+            } else {
+                binding.threshold.isVisible = false
+            }
+        }
+
+    }
+
+    private fun isInMonitoredHours(timeSlots: Array<Array<String>>): Boolean {
+        val cal = Calendar.getInstance()
+        val h = cal[Calendar.HOUR_OF_DAY]
+        val m = cal[Calendar.MINUTE]
+        val current: String =
+            ("" + h).padStart(2, '0') + ":" + ("" + m).padStart(2, '0') + ":00"
+        if (sensor?.timeSlot1 == false && isTimeBetweenTwoTime(
+                timeSlots.get(0).get(0) + ":00",
+                timeSlots.get(0).get(1) + ":00",
+                current
+            )
+        ) {
+            return false
+        }
+        if (sensor?.timeSlot2 == false && isTimeBetweenTwoTime(
+                timeSlots.get(1).get(0) + ":00",
+                timeSlots.get(1).get(1) + ":00",
+                current
+            )
+        ) {
+            return false
+        }
+        if (sensor?.timeSlot3 == false && isTimeBetweenTwoTime(
+                timeSlots.get(2).get(0) + ":00",
+                timeSlots.get(2).get(1) + ":00",
+                current
+            )
+        ) {
+            return false
+        }
+        if (sensor?.timeSlot4 == false && isTimeBetweenTwoTime(
+                timeSlots.get(3).get(0) + ":00",
+                timeSlots.get(3).get(1) + ":00",
+                current
+            )
+        ) {
+            return false
+        }
+        if (sensor?.timeSlot5 == false && isTimeBetweenTwoTime(
+                timeSlots.get(4).get(0) + ":00",
+                timeSlots.get(4).get(1) + ":00",
+                current
+            )
+        ) {
+            return false
+        }
+        return true
+    }
+
+
+    fun isTimeBetweenTwoTime(from: String, to: String, currentTime: String): Boolean {
+        try {
+            val reg = Regex("^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$")
+            if (from.matches(reg) && to.matches(reg) && currentTime.matches(reg)) {
+                var valid = false
+
+                //Start Time
+                val initialTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).parse(from)
+                val calendarFrom = Calendar.getInstance()
+                calendarFrom.time = initialTime
+
+                //Check Time
+                val checkTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).parse(currentTime)
+                val calendarCheck = Calendar.getInstance()
+                calendarCheck.time = checkTime
+                if (checkTime.compareTo(initialTime) < 0) {
+                    calendarCheck.add(Calendar.DATE, 1)
+                }
+
+                //End Time
+                val finalTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).parse(to)
+                val calendarTo = Calendar.getInstance()
+                calendarTo.time = finalTime
+                if (finalTime.compareTo(initialTime) < 0) {
+                    calendarTo.add(Calendar.DATE, 1)
+                }
+
+//                Log.d(Consts.APP_TAG, "from: " + calendarFrom.getTime().toString());
+//                Log.d(Consts.APP_TAG, "chk:  " + calendarCheck.getTime().toString());
+//                Log.d(Consts.APP_TAG, "to:   " + calendarTo.getTime().toString());
+                val actualTime = calendarCheck.time
+                if ((actualTime.after(calendarFrom.time) || actualTime.compareTo(calendarFrom.time) == 0) && actualTime.before(
+                        calendarTo.time
+                    )
+                ) {
+                    valid = true
+                    return valid
+                }
+            } else {
+                return false
+                //            throw new IllegalArgumentException("Not a valid time, expecting HH:MM:SS format");
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return false
     }
 
 }

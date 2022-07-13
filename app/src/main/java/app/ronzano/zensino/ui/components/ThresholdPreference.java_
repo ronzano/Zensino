@@ -1,0 +1,247 @@
+package app.ronzano.zensino.ui.components;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceViewHolder;
+
+import java.util.ArrayList;
+
+import app.ronzano.zensino.R;
+
+public class ThresholdPreference extends Preference implements View.OnClickListener {
+
+    private Button[] buttons = {null, null, null, null};
+    private View[] cycles = {null, null, null, null};
+    private int mSelected = 0;
+    private boolean mEnabled = true;
+    private ArrayList<String> mAlertTimeLabels;
+    private ArrayList<String> mAlertTimeColors;
+    private ArrayList<AlertTimeButton> mAlertTimeLC;
+
+    public ThresholdPreference(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    public ThresholdPreference(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public ThresholdPreference(Context context) {
+        super(context);
+    }
+
+
+    @Override
+    public void onAttached() {
+        super.onAttached();
+        setLayoutResource(R.layout.threshold_preference);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull PreferenceViewHolder rootView) {
+        super.onBindViewHolder(rootView);
+        buttons[0] = (Button) rootView.findViewById(R.id.button0);
+        buttons[1] = (Button) rootView.findViewById(R.id.button1);
+        buttons[2] = (Button) rootView.findViewById(R.id.button2);
+        buttons[3] = (Button) rootView.findViewById(R.id.button3);
+        cycles[0] = rootView.findViewById(R.id.cycle0);
+        cycles[1] = rootView.findViewById(R.id.cycle1);
+        cycles[2] = rootView.findViewById(R.id.cycle2);
+        cycles[3] = rootView.findViewById(R.id.cycle3);
+        buttons[0].setOnClickListener(this);
+        buttons[1].setOnClickListener(this);
+        buttons[2].setOnClickListener(this);
+        buttons[3].setOnClickListener(this);
+        rebuildAlertTimeLC();
+        updateButtons();
+    }
+
+    @Override
+    public void onDependencyChanged(Preference dependency, boolean disableDependent) {
+        super.onDependencyChanged(dependency, disableDependent);
+    }
+
+    @Override
+    public void onParentChanged(Preference parent, boolean disableChild) {
+        super.onParentChanged(parent, disableChild);
+        mEnabled = !disableChild;
+        if (buttons[0] != null) updateButtons();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button0:
+                handleButtonClick(0);
+                break;
+            case R.id.button1:
+                handleButtonClick(1);
+                break;
+            case R.id.button2:
+                handleButtonClick(2);
+                break;
+            case R.id.button3:
+                handleButtonClick(3);
+                break;
+        }
+        getOnPreferenceChangeListener().onPreferenceChange(ThresholdPreference.this, mSelected);
+        updateButtons();
+    }
+
+    private void handleButtonClick(int buttonIndex) {
+        int counter = 0;
+        for (int i = 0; i < mAlertTimeLC.size(); i++) {
+            AlertTimeButton atb = mAlertTimeLC.get(i);
+            if (buttonIndex == i) {
+                boolean selected = false;
+
+                for (int j = 0; j < atb.mAlertTimes.size(); j++) {
+                    AlertTime at = atb.getAlertTimes().get(j);
+                    if (mSelected == at.getIndex()) selected = true;
+                }
+                if (selected) atb.setSelected((atb.getSelected() + 1) % atb.getAlertTimes().size());
+                mSelected = counter + atb.getSelected();
+            }
+            counter += atb.mAlertTimes.size();
+        }
+    }
+
+    public void setValue(int value) {
+        mSelected = value;
+        if (buttons[0] != null) updateButtons();
+    }
+
+    private void rebuildAlertTimeLC() {
+        mAlertTimeLC = new ArrayList<>();
+        int counter = 0;
+        for (int i = 0; i < mAlertTimeLabels.size(); i++) {
+            AlertTimeButton atb = new AlertTimeButton(buttons[i], cycles[i]);
+            String[] atl = mAlertTimeLabels.get(i).split(",");
+            String[] atc = mAlertTimeColors.get(i).split(",");
+            for (int j = 0; j < atl.length; j++) {
+                AlertTime a = new AlertTime(counter, atl[j], atc[j]);
+                atb.addAlertTime(a);
+                if (counter == mSelected) atb.setSelected(j);
+                counter++;
+            }
+            mAlertTimeLC.add(atb);
+        }
+    }
+
+    private void updateButtons() {
+
+        for (int i = 0; i < mAlertTimeLC.size(); i++) {
+            AlertTimeButton atb = mAlertTimeLC.get(i);
+            boolean selected = false;
+            for (int j = 0; j < atb.mAlertTimes.size(); j++) {
+
+                AlertTime at = atb.getAlertTimes().get(j);
+
+                int bg = R.drawable.button_threshold_sel;
+                atb.getButton().setBackground(ContextCompat.getDrawable(getContext(), bg));
+//                setButtonColor(atb.getButton(), at.getColor(), ContextCompat.getColor(getContext(), R.color.threshold_no));
+                setButtonLabel(atb.getButton(), at.getLabel());
+
+//                if (at.getIndex() == mSelected) {
+//                    selected = true;
+//                }
+//                if (atb.getSelected() == j) {
+//                    int bg = selected ? R.drawable.button_threshold_sel : R.drawable.button_threshold;
+////                    int bg = !mEnabled ? R.drawable.button_threshold_disabled : selected ? R.drawable.button_threshold_sel : R.drawable.button_threshold;
+//                    bg=  R.drawable.button_threshold_sel;
+//                    atb.getButton().setBackgroundResource(bg);
+//                    setButtonColor(atb.getButton(), at.getColor(), ContextCompat.getColor(getContext(), R.color.threshold_no));
+//                    setButtonLabel(atb.getButton(), at.getLabel());
+//                }
+            }
+
+            atb.getCycle().setVisibility(atb.mAlertTimes.size() > 1 ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    private void setButtonColor(Button button, String strColor, int def) {
+        Drawable l = button.getBackground();
+        int color = Color.parseColor(strColor);
+        l.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+    }
+
+    private void setButtonLabel(Button button, String label) {
+        button.setText(label);
+    }
+
+    public void setLabels(ArrayList<String> alertTimeLabels, ArrayList<String> alertTimeColors) {
+        mAlertTimeLabels = alertTimeLabels;
+        mAlertTimeColors = alertTimeColors;
+    }
+
+    private class AlertTimeButton {
+        private final Button mButton;
+        private final View mCycle;
+        private final ArrayList<AlertTime> mAlertTimes = new ArrayList<>();
+        private int mSelected = 0;
+
+        AlertTimeButton(Button button, View cycle) {
+            this.mButton = button;
+            this.mCycle = cycle;
+        }
+
+        Button getButton() {
+            return mButton;
+        }
+
+        View getCycle() {
+            return mCycle;
+        }
+
+        void addAlertTime(AlertTime alertTime) {
+            mAlertTimes.add(alertTime);
+        }
+
+        ArrayList<AlertTime> getAlertTimes() {
+            return mAlertTimes;
+        }
+
+        int getSelected() {
+            return mSelected;
+        }
+
+        void setSelected(int selected) {
+            this.mSelected = selected;
+        }
+    }
+
+    private class AlertTime {
+        private final int mIndex;
+        private final String mLabel;
+        private final String mColor;
+
+        AlertTime(int index, String label, String color) {
+            mIndex = index;
+            mLabel = label;
+            mColor = color;
+        }
+
+        int getIndex() {
+            return mIndex;
+        }
+
+        String getLabel() {
+            return mLabel;
+        }
+
+        String getColor() {
+            return mColor;
+        }
+
+    }
+
+}

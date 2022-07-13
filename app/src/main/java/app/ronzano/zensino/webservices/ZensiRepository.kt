@@ -11,6 +11,10 @@ class ZensiRepository(baseUrl: String) : BaseRepository() {
         password: String,
     ) = apiCall { client.login(LoginRequest(username, password)) }
 
+    suspend fun timeSlots(
+        token: String
+    ) = apiCall { client.timeslots("Token $token") }
+
     suspend fun status(
         token: String
     ) = apiCall { client.status("Token $token") }

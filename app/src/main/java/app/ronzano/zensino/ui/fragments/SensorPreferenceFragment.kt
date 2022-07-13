@@ -1,12 +1,15 @@
 package app.ronzano.zensino.ui.fragments
 
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import app.ronzano.zensino.R
+import app.ronzano.zensino.extensions.initOptionsMenu
 import app.ronzano.zensino.ui.components.InlineEditTextPreference
 import app.ronzano.zensino.ui.components.ThresholdPreference
 import app.ronzano.zensino.ui.viewmodels.MainViewModel
@@ -26,6 +29,11 @@ class SensorPreferenceFragment : PreferenceFragmentCompat() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            setDisplayShowHomeEnabled(true)
+            setDisplayHomeAsUpEnabled(true)
+            show()
+        }
 
         val sensor = args.sensor
 //        val sensor: StatusResponse.SensorData = requireActivity().getIntent()
@@ -53,16 +61,24 @@ class SensorPreferenceFragment : PreferenceFragmentCompat() {
             sensor.displayName
         (findPreference(getString(R.string.key_monitor_enabled)) as? SwitchPreference)?.isChecked =
             sensor.monitorOn
-        (findPreference(getString(R.string.key_morning)) as? SwitchPreference)?.isChecked = sensor.timeSlot1
-        (findPreference(getString(R.string.key_lunch)) as? SwitchPreference)?.isChecked = sensor.timeSlot2
-        (findPreference(getString(R.string.key_afternoon)) as? SwitchPreference)?.isChecked = sensor.timeSlot3
-        (findPreference(getString(R.string.key_evening)) as? SwitchPreference)?.isChecked = sensor.timeSlot4
-        (findPreference(getString(R.string.key_night)) as? SwitchPreference)?.isChecked = sensor.timeSlot5
-        (findPreference(getString(R.string.key_threshold)) as? ThresholdPreference)?.setLabels(
-            mainModel.alertTimeLabels,
-            mainModel.alertTimeColors
-        )
-        (findPreference(getString(R.string.key_threshold)) as? ThresholdPreference)?.setValue(sensor.alertTimeIdx)
+        (findPreference(getString(R.string.key_morning)) as? SwitchPreference)?.isChecked =
+            sensor.timeSlot1
+        (findPreference(getString(R.string.key_lunch)) as? SwitchPreference)?.isChecked =
+            sensor.timeSlot2
+        (findPreference(getString(R.string.key_afternoon)) as? SwitchPreference)?.isChecked =
+            sensor.timeSlot3
+        (findPreference(getString(R.string.key_evening)) as? SwitchPreference)?.isChecked =
+            sensor.timeSlot4
+        (findPreference(getString(R.string.key_night)) as? SwitchPreference)?.isChecked =
+            sensor.timeSlot5
+        (findPreference(getString(R.string.key_threshold)) as? ThresholdPreference?)?.apply {
+            setLabels(
+                mainModel.status?.alertTimeLabels,
+                mainModel.status?.alertTimeColors
+            )
+            setValue(sensor.alertTimeIdx)
+        }
+
         mSensorSettings = SensorSettings(sensor.padId).also {
             it.alertTimeIdx = sensor.alertTimeIdx
             it.displayName = sensor.displayName
@@ -75,48 +91,53 @@ class SensorPreferenceFragment : PreferenceFragmentCompat() {
         }
 
         //Ugly code start
-        (findPreference(getString(R.string.key_sensor_displayname)) as? InlineEditTextPreference)?.setOnPreferenceChangeListener(
-            { preference: Preference?, o: Any? ->
-                mSensorSettings?.displayName = (o as String?)
-                updateSensorSettings()
-                true
-            })
-        (findPreference(getString(R.string.key_monitor_enabled)) as? Preference)?.setOnPreferenceChangeListener { preference: Preference?, o: Any? ->
+        (findPreference(getString(R.string.key_sensor_displayname)) as? InlineEditTextPreference)?.setOnPreferenceChangeListener { _: Preference?, o: Any? ->
+            mSensorSettings?.displayName = (o as String?)
+            updateSensorSettings()
+            true
+        }
+        (findPreference(getString(R.string.key_monitor_enabled)) as? Preference)?.setOnPreferenceChangeListener { _: Preference?, o: Any? ->
             mSensorSettings?.isMonitoringActive = (o as Boolean? == true)
             updateSensorSettings()
             true
         }
-        (findPreference(getString(R.string.key_morning)) as? Preference)?.setOnPreferenceChangeListener { preference: Preference?, o: Any? ->
+        (findPreference(getString(R.string.key_morning)) as? Preference)?.setOnPreferenceChangeListener { _: Preference?, o: Any? ->
             mSensorSettings?.timeSlot1On = (o as Boolean? == true)
             updateSensorSettings()
             true
         }
-        (findPreference(getString(R.string.key_lunch)) as? Preference)?.setOnPreferenceChangeListener { preference: Preference?, o: Any? ->
+        (findPreference(getString(R.string.key_lunch)) as? Preference)?.setOnPreferenceChangeListener { _: Preference?, o: Any? ->
             mSensorSettings?.timeSlot2On = (o as Boolean? == true)
             updateSensorSettings()
             true
         }
-        (findPreference(getString(R.string.key_afternoon)) as? Preference)?.setOnPreferenceChangeListener { preference: Preference?, o: Any? ->
+        (findPreference(getString(R.string.key_afternoon)) as? Preference)?.setOnPreferenceChangeListener { _: Preference?, o: Any? ->
             mSensorSettings?.timeSlot3On = (o as Boolean? == true)
             updateSensorSettings()
             true
         }
-        (findPreference(getString(R.string.key_evening)) as? Preference)?.setOnPreferenceChangeListener { preference: Preference?, o: Any? ->
+        (findPreference(getString(R.string.key_evening)) as? Preference)?.setOnPreferenceChangeListener { _: Preference?, o: Any? ->
             mSensorSettings?.timeSlot4On = (o as Boolean? == true)
             updateSensorSettings()
             true
         }
-        (findPreference(getString(R.string.key_night)) as? Preference)?.setOnPreferenceChangeListener { preference: Preference?, o: Any? ->
+        (findPreference(getString(R.string.key_night)) as? Preference)?.setOnPreferenceChangeListener { _: Preference?, o: Any? ->
             mSensorSettings?.timeSlot5On = (o as Boolean? == true)
             updateSensorSettings()
             true
         }
-        (findPreference(getString(R.string.key_threshold)) as? Preference)?.setOnPreferenceChangeListener { preference: Preference?, o: Any ->
+        (findPreference(getString(R.string.key_threshold)) as? Preference)?.setOnPreferenceChangeListener { _: Preference?, o: Any ->
             mSensorSettings?.alertTimeIdx = (o as Int)
             updateSensorSettings()
             true
         }
         //Ugly code end
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initOptionsMenu()
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

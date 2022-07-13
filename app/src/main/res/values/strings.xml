@@ -6,7 +6,7 @@
     <string name="not_found_error">HTTP %d - Not found</string>
     <string name="internal_server_error">HTTP %d - Internal server error</string>
     <string name="timeout">Timeout</string>
-    <string name="username">Nome utente</string>
+    <string name="username">Username</string>
     <string name="default_username">CareComfort</string>
     <string name="password">Password</string>
     <string name="default_password">care2020</string>
@@ -17,6 +17,7 @@
     <string name="error">Errore</string>
     <string name="empty_value">-</string>
     <string name="last_update">Last update: %s</string>
+    <string name="stop">Stop</string>
     <string name="notification_channel_id">notification_channel_zensi_status</string>
     <string name="notification_status_message">Connected to Zensi</string>
     <string name="report_false_alarm">Report false alarm</string>
@@ -76,6 +77,7 @@
     <string name="key_evening" translatable="false">evening</string>
     <string name="key_night" translatable="false">night</string>
     <string name="key_cat_time_slot" translatable="false">time_slot</string>
+    <string name="key_cat_threshold">threshold</string>
     <string name="key_cat_sensor_options" translatable="false">sensor_options</string>
     <string name="title_cat_time_slot">Time slot</string>
     <string name="summary_morning" translatable="false">07:30 – 11:30</string>

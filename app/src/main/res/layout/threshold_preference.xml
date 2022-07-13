@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button0"
         android:layout_width="70dp"
         android:layout_height="0dp"
@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="NO" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button1"
         android:layout_width="70dp"
         android:layout_height="0dp"
@@ -45,7 +45,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="0+" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button2"
         android:layout_width="70dp"
         android:layout_height="0dp"
@@ -65,7 +65,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="15+" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button3"
         android:layout_width="70dp"
         android:layout_height="0dp"

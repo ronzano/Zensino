@@ -24,10 +24,10 @@ data class StatusResponse(
     val deptName: String,
 
     @SerializedName("alert-time-labels")
-    val alertTimeLabels: ArrayList<String>? = null,
+    val alertTimeLabels: ArrayList<String>,
 
     @SerializedName("alert-time-colors")
-    val alertTimeColors: ArrayList<String>? = null,
+    val alertTimeColors: ArrayList<String>,
 
     @SerializedName("button-status-colors")
     val buttonStatusColors: HashMap<String, String>? = null,
@@ -95,7 +95,12 @@ data class StatusResponse(
         /* App fields */
         private val mShowTime: Boolean = false
 
-    ) : Parcelable
+    ) : Parcelable {
+
+        fun isUndetected(): Boolean {
+            return status == Consts.STATUS_UNDETECTED
+        }
+    }
 
     @Parcelize
     data class AppParameters(

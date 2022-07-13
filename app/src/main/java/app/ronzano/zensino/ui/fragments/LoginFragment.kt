@@ -6,6 +6,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -31,6 +32,11 @@ class LoginFragment : Fragment() {
     private val mainModel: MainViewModel by activityViewModels()
     private val model: LoginViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,8 +58,7 @@ class LoginFragment : Fragment() {
         checkFloatingWindow()
 
         binding.buttonLogin.debounceClickListener { onLoginClick() }
-        if (first++ == 0) onLoginClick()
-
+//        if (first++ == 0) onLoginClick()
     }
 
     private fun checkFloatingWindow(): Boolean {
@@ -86,8 +91,8 @@ class LoginFragment : Fragment() {
             try {
                 val repo = ZensiRepository(Constants.API_ENDPOINT)
                 val response = repo.login(username, password)
-                onLoggedIn(username, password, response)
-
+                val timeSlots = repo.timeSlots(response.token!!).timeSlots
+                onLoggedIn(username, password, response, timeSlots)
             } catch (e: Exception) {
                 loge(e)
                 model.error.value = e.localizedMessage ?: getString(R.string.error)
@@ -97,11 +102,16 @@ class LoginFragment : Fragment() {
         }
     }
 
-    private fun onLoggedIn(username: String, password: String, response: LoginResponse) {
+    private fun onLoggedIn(
+        username: String,
+        password: String,
+        response: LoginResponse,
+        timeSlots: Array<Array<String>>
+    ) {
 //        FirebaseCrashlytics.getInstance().setUserId(CurrentConfig.login!!.userId)
-        mainModel.token = response.token
+        mainModel.token = response.token!!
+        mainModel.timeSlots = timeSlots
         navigate(LoginFragmentDirections.actionLoginFragmentToDashboardFragment())
-
     }
 
 }

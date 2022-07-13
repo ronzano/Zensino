@@ -9,7 +9,7 @@ import androidx.preference.PreferenceViewHolder
 import androidx.preference.SwitchPreference
 import app.ronzano.zensino.R
 
-class InlineSwitchPreference(context: Context?, attrs: AttributeSet?) :
+class InlineSwitchPreference(context: Context, attrs: AttributeSet?) :
     SwitchPreference(context, attrs) {
 
     override fun onAttached() {
@@ -32,7 +32,7 @@ class InlineSwitchPreference(context: Context?, attrs: AttributeSet?) :
         textViewSummary.text = summary
         switchValue.isChecked = isChecked
         switchValue.setOnCheckedChangeListener { compoundButton: CompoundButton?, b: Boolean ->
-            onPreferenceChangeListener.onPreferenceChange(
+            onPreferenceChangeListener?.onPreferenceChange(
                 this@InlineSwitchPreference,
                 b
             )

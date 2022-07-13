@@ -11,7 +11,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import app.ronzano.zensino.R
 
-class ThresholdPreference(context: Context, attrs: AttributeSet) : Preference(context, attrs),
+class ThresholdPreference(context: Context, attrs: AttributeSet?) : Preference(context, attrs),
     View.OnClickListener {
     private val buttons = arrayOf<Button?>(null, null, null, null)
     private val cycles = arrayOf<View?>(null, null, null, null)
@@ -50,10 +50,9 @@ class ThresholdPreference(context: Context, attrs: AttributeSet) : Preference(co
         }
     }
 
-
-    override fun onDependencyChanged(dependency: Preference, disableDependent: Boolean) {
-        super.onDependencyChanged(dependency, disableDependent)
-    }
+//    override fun onDependencyChanged(dependency: Preference, disableDependent: Boolean) {
+//        super.onDependencyChanged(dependency, disableDependent)
+//    }
 
     override fun onParentChanged(parent: Preference, disableChild: Boolean) {
         super.onParentChanged(parent, disableChild)
@@ -73,20 +72,22 @@ class ThresholdPreference(context: Context, attrs: AttributeSet) : Preference(co
     }
 
     private fun handleButtonClick(buttonIndex: Int) {
-        var counter = 0
-        for (i in mAlertTimeLC!!.indices) {
-            val atb = mAlertTimeLC!![i]
-            if (buttonIndex == i) {
-                var selected = false
-                for (j in atb.alertTimes.indices) {
-                    val at = atb.alertTimes[j]
-                    if (mSelected == at.index) selected = true
-                }
-                if (selected) atb.selected = (atb.selected + 1) % atb.alertTimes.size
-                mSelected = counter + atb.selected
-            }
-            counter += atb.alertTimes.size
-        }
+        mSelected = mAlertTimeLC?.get(buttonIndex)?.click(mSelected)!!
+
+//        var counter = 0
+//        for (i in mAlertTimeLC!!.indices) {
+//            val atb = mAlertTimeLC!![i]
+//            if (buttonIndex == i) {
+//                var selected = false
+//                for (j in atb.alertTimes.indices) {
+//                    val at = atb.alertTimes[j]
+//                    if (mSelected == at.index) selected = true
+//                }
+//                if (selected) atb.selected = (atb.selected + 1) % atb.alertTimes.size
+//                mSelected = counter + atb.selected
+//            }
+//            counter += atb.alertTimes.size
+//        }
     }
 
     fun setValue(value: Int) {
@@ -95,50 +96,47 @@ class ThresholdPreference(context: Context, attrs: AttributeSet) : Preference(co
     }
 
     private fun rebuildAlertTimeLC() {
-        mAlertTimeLabels?.let { alertTimeLabels ->
-            mAlertTimeLC = ArrayList()
-            var counter = 0
-            for (i in alertTimeLabels.indices) {
-                val atb = AlertTimeButton(buttons[i], cycles[i])
-                val atl = alertTimeLabels[i].split(",").toTypedArray()
-                val atc = mAlertTimeColors!![i].split(",").toTypedArray()
-                for (j in atl.indices) {
-                    val a = AlertTime(counter, atl[j], atc[j])
-                    atb.addAlertTime(a)
-                    if (counter == mSelected) atb.selected = j
-                    counter++
-                }
-                mAlertTimeLC!!.add(atb)
-            }
+        mAlertTimeLC = ArrayList()
+        var counter = 0
+        for (i in mAlertTimeLabels!!.indices) {
+            val labels = mAlertTimeLabels!![i].split(",")
+            val colors = mAlertTimeColors!![i].split(",")
+            val atb = AlertTimeButton(buttons[i], cycles[i], counter, labels, colors)
+            counter += labels.size
+            mAlertTimeLC!!.add(atb)
         }
     }
 
     private fun updateButtons() {
-        mAlertTimeLC?.let { alertTimeLC ->
-            for (i in alertTimeLC.indices) {
-                val atb = alertTimeLC[i]
-                var selected = false
-                for (j in atb.alertTimes.indices) {
-                    val at = atb.alertTimes[j]
-                    if (at.index == mSelected) {
-                        selected = true
-                    }
-                    if (atb.selected == j) {
-                        val bg: Int =
-                            if (!mEnabled) R.drawable.button_threshold_disabled else if (selected) R.drawable.button_threshold_sel else R.drawable.button_threshold
-                        atb.button!!.setBackgroundResource(bg)
-                        setButtonColor(
-                            atb.button,
-                            at.color,
-                            ContextCompat.getColor(context, R.color.threshold_no)
-                        )
-                        setButtonLabel(atb.button, at.label)
-                    }
-                }
-                atb.cycle!!.visibility =
-                    if (atb.alertTimes.size > 1) View.VISIBLE else View.INVISIBLE
-            }
+        mAlertTimeLC?.forEach {
+            it.update(mSelected)
         }
+//        for (i in mAlertTimeLC!!.indices) {
+//            val atb = mAlertTimeLC!![i]
+//            var selected = false
+//            for (j in atb.alertTimes.indices) {
+//                val at = atb.alertTimes[j]
+//                if (at.index == mSelected) {
+//                    selected = true
+//                }
+//                if (atb.selected == j) {
+//                    val bg =
+//                        if (!mEnabled) R.drawable.button_threshold_disabled
+//                        else
+//                            if (selected) R.drawable.button_threshold_sel
+//                            else R.drawable.button_threshold
+//                    atb.button!!.setBackgroundResource(bg)
+//                    setButtonColor(
+//                        atb.button,
+//                        at.color,
+//                        ContextCompat.getColor(context, R.color.threshold_no)
+//                    )
+//                    setButtonLabel(atb.button, at.label)
+//                }
+//            }
+//            atb.cycle!!.visibility =
+//                if (atb.alertTimes.size > 1) View.VISIBLE else View.INVISIBLE
+//        }
     }
 
     private fun setButtonColor(button: Button?, strColor: String, def: Int) {
@@ -154,17 +152,44 @@ class ThresholdPreference(context: Context, attrs: AttributeSet) : Preference(co
     fun setLabels(alertTimeLabels: ArrayList<String>?, alertTimeColors: ArrayList<String>?) {
         mAlertTimeLabels = alertTimeLabels
         mAlertTimeColors = alertTimeColors
-        rebuildAlertTimeLC()
     }
 
     private inner class AlertTimeButton(
         val button: Button?,
-        val cycle: View?
+        val cycle: View?,
+        val startIndex: Int,
+        val labels: List<String>,
+        val colors: List<String>
     ) {
         val alertTimes = ArrayList<AlertTime>()
-        var selected = 0
+//        var selected = 0
+
+        init {
+            for (j in labels.indices) {
+                val a = AlertTime(startIndex + j, labels[j], colors[j])
+                addAlertTime(a)
+//                if (counter == mSelected) atb.selected = j
+            }
+        }
+
         fun addAlertTime(alertTime: AlertTime) {
             alertTimes.add(alertTime)
+        }
+
+        fun click(selectedIndex: Int): Int {
+            val maxIndex = startIndex + labels.size
+            if (selectedIndex < startIndex || selectedIndex >= startIndex + labels.size)
+                return startIndex
+            return Math.max((selectedIndex + 1) % maxIndex, startIndex)
+        }
+
+        fun update(selectedIndex: Int) {
+//            if (selectedIndex < startIndex || selectedIndex >= startIndex + labels.size) {
+//
+//            }
+            val bg = R.drawable.button_threshold_sel
+            button?.setBackgroundResource(bg)
+            button?.setText(labels[0])
         }
     }
 

@@ -109,7 +109,7 @@
             android:id="@+id/last_update"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#000000"
+            android:background="?attr/colorPrimary"
             android:gravity="center_horizontal"
             android:padding="8dp"
             android:textColor="@color/white"

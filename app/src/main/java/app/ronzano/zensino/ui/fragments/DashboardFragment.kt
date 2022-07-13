@@ -1,12 +1,14 @@
 package app.ronzano.zensino.ui.fragments
 
 import android.content.*
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startForegroundService
 import androidx.core.view.ViewCompat.generateViewId
 import androidx.core.view.updateMargins
 import androidx.fragment.app.Fragment
@@ -14,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.findNavController
+import app.ronzano.zensino.Consts
 import app.ronzano.zensino.R
 import app.ronzano.zensino.databinding.FragmentDashboardBinding
 import app.ronzano.zensino.extensions.loge
@@ -40,11 +43,18 @@ class DashboardFragment : Fragment() {
 
 //    private val model: DashboardViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+//        activity?.actionBar?.hide()
+//        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        (activity as AppCompatActivity).supportActionBar?.hide()
         return FragmentDashboardBinding.inflate(inflater, container, false).also {
             binding = it
 //            it.model = model
@@ -59,7 +69,7 @@ class DashboardFragment : Fragment() {
 
         lifecycleScope.launch {
             //TODO: preload cached logo
-            mainModel.token?.let { t ->
+            mainModel.token.let { t ->
                 try {
                     val logoUrl = repo.logo(t).logo
                     Glide
@@ -76,7 +86,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun logout() {
-        mainModel.token = null
+//        mainModel.token = null
         _statusService?.stop()
         findNavController().setGraph(R.navigation.nav_graph_main)
     }
@@ -87,7 +97,12 @@ class DashboardFragment : Fragment() {
             val binder: StatusService.LocalBinder = service as StatusService.LocalBinder
             _statusService = binder.service
             _statusService?.setToken(mainModel.token)
-            _statusService?.startService(Intent(context, StatusService::class.java))
+            val intent = Intent(context, StatusService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                _statusService?.startForegroundService(intent)
+            else
+                _statusService?.startService(intent)
+//            _statusService?.startForegroundService()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -106,7 +121,8 @@ class DashboardFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        //TODO: grab last status
+        val ls = StatusService.getLastStatus()
+        updateStatus(ls.first, ls.second)
         registerReceivers()
     }
 
@@ -135,6 +151,13 @@ class DashboardFragment : Fragment() {
 //            Snackbar.make(requireView(), status.toString(), Snackbar.LENGTH_SHORT).show()
             val status = intent.getParcelableExtra<StatusResponse>(StatusService.EXTRA_STATUS)
             val date = intent.getLongExtra(StatusService.EXTRA_DATE, 0)
+            updateStatus(status, date)
+        }
+    }
+
+    private fun updateStatus(status: StatusResponse?, date: Long?) {
+        if (date != null && date != 0L) {
+            mainModel.status = status
             updateUI(status, Date(date))
         }
     }
@@ -146,6 +169,16 @@ class DashboardFragment : Fragment() {
         binding.lastUpdate.text = getString(R.string.last_update, lastDate)
 
         renderSensors(status)
+//        status?.let { s  ->
+//            navigate(
+//                DashboardFragmentDirections.actionDashboardFragmentToSensorPreferenceFragment(
+//                    s.data!!.let {
+//                        it.get(it.keys.first())!!.get("3")!!
+//                    }
+//                )
+//            )
+//        }
+
     }
 
     private fun renderSensors(status: StatusResponse?) {
@@ -170,11 +203,13 @@ class DashboardFragment : Fragment() {
                                     )
                                     listener = object : ISensorTileListener {
                                         override fun onLongClick(sensor: StatusResponse.SensorData) {
-                                            navigate(
-                                                DashboardFragmentDirections.actionDashboardFragmentToSensorPreferenceFragment(
-                                                    sensor
+                                            if (!sensor.isUndetected() || Consts.ALWAYS_ENABLE_SETTINGS) { //Disable settings
+                                                navigate(
+                                                    DashboardFragmentDirections.actionDashboardFragmentToSensorPreferenceFragment(
+                                                        sensor
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
                                     }
                                 }
@@ -182,10 +217,12 @@ class DashboardFragment : Fragment() {
                             sensorTile.sensor = sensor
 //                            sensorTile.displayName = sensor.displayName
                             status.buttonStatusColors?.get(sensor.status)?.let {
-                                sensorTile.setStatusColor(
-                                    it
-                                )
+                                sensorTile.setStatusColor(it)
                             }
+                            sensorTile.updateMonitoringStatus(
+                                status.alertTimeColors.flat(),
+                                mainModel.timeSlots
+                            )
                         }
                     }
                 }
@@ -193,4 +230,13 @@ class DashboardFragment : Fragment() {
         }
     }
 
+}
+
+private fun ArrayList<String>.flat(): ArrayList<String> {
+    val result = ArrayList<String>()
+    for (at in this) {
+        val flat = at.split(",").toTypedArray()
+        result.addAll(Arrays.asList(*flat))
+    }
+    return result
 }

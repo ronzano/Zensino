@@ -23,6 +23,11 @@ interface ZensiService {
         @Header("Authorization") token: String,
     ): LogoResponse
 
+    @GET("api/v2/timeslots/")
+    suspend fun timeslots(
+        @Header("Authorization") token: String,
+    ): TimeSlotsResponse
+
     @POST("api/v2/pt/")
     suspend fun telemetry(
         @Header("Authorization") token: String,
