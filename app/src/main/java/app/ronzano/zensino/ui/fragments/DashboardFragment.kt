@@ -1,14 +1,13 @@
 package app.ronzano.zensino.ui.fragments
 
 import android.content.*
+import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startForegroundService
 import androidx.core.view.ViewCompat.generateViewId
 import androidx.core.view.updateMargins
 import androidx.fragment.app.Fragment
@@ -34,12 +33,17 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.*
 
+val Int.dp: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+val Int.px: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
 class DashboardFragment : Fragment() {
 
     private lateinit var binding: FragmentDashboardBinding
     private val mainModel: MainViewModel by activityViewModels()
     private val _statusReceiver = StatusReceiver()
-    private var _statusService: StatusService? = null
+//    private var _statusService: StatusService? = null
 
 //    private val model: DashboardViewModel by viewModels()
 
@@ -87,36 +91,47 @@ class DashboardFragment : Fragment() {
 
     private fun logout() {
 //        mainModel.token = null
-        _statusService?.stop()
+//        _statusService?.stop()
         findNavController().setGraph(R.navigation.nav_graph_main)
     }
 
 
-    private val _statusServiceConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            val binder: StatusService.LocalBinder = service as StatusService.LocalBinder
-            _statusService = binder.service
-            _statusService?.setToken(mainModel.token)
-            val intent = Intent(context, StatusService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                _statusService?.startForegroundService(intent)
-            else
-                _statusService?.startService(intent)
-//            _statusService?.startForegroundService()
-        }
+//    private val _statusServiceConnection: ServiceConnection = object : ServiceConnection {
+//        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+//            val binder: StatusService.LocalBinder = service as StatusService.LocalBinder
+//            _statusService = binder.service
+//            _statusService?.setToken(mainModel.token)
+//            val intent = Intent(context, StatusService::class.java)
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+//                _statusService?.startForegroundService(intent)
+//            else
+//                _statusService?.startService(intent)
+////            _statusService?.startForegroundService()
+//        }
+//
+//        override fun onServiceDisconnected(name: ComponentName) {
+//            _statusService = null
+//        }
+//    }
 
-        override fun onServiceDisconnected(name: ComponentName) {
-            _statusService = null
-        }
+    fun startStatusService() {
+        val intent = Intent(context, StatusService::class.java)
+        intent.putExtra(StatusService.EXTRA_TOKEN, mainModel.token)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            context?.startForegroundService(intent)
+        else
+            context?.startService(intent)
+
     }
 
     override fun onStart() {
         super.onStart()
-        requireActivity().bindService(
-            Intent(requireContext(), StatusService::class.java),
-            _statusServiceConnection,
-            AppCompatActivity.BIND_AUTO_CREATE
-        )
+        startStatusService()
+//        requireActivity().bindService(
+//            Intent(requireContext(), StatusService::class.java),
+//            _statusServiceConnection,
+//            AppCompatActivity.BIND_AUTO_CREATE
+//        )
     }
 
     override fun onResume() {
@@ -132,7 +147,7 @@ class DashboardFragment : Fragment() {
     }
 
     override fun onStop() {
-        requireActivity().unbindService(_statusServiceConnection)
+//        requireActivity().unbindService(_statusServiceConnection)
         super.onStop()
     }
 
@@ -194,7 +209,7 @@ class DashboardFragment : Fragment() {
                                 sensorTile = SensorTile(requireContext()).apply {
                                     id = generateViewId()
                                     tag = sensor.padId
-                                    binding.containerSensors.addView(this, 200, 200)
+                                    binding.containerSensors.addView(this, 120.px, 120.px)
                                     (layoutParams as? ViewGroup.MarginLayoutParams)?.updateMargins(
                                         top = context.resources.getDimensionPixelSize(R.dimen.margin_half),
                                         left = context.resources.getDimensionPixelSize(R.dimen.margin_half),

@@ -56,10 +56,7 @@ class StatusService : Service() {
         }
     }
 
-    private val _notification: Notification? by lazy {
-//        val intent = Intent(this, StatusService::class.java)
-//        intent.putExtra(EXTRA_STARTED_FROM_NOTIFICATION, true)
-
+    private fun buildNotification(): Notification {
         val activityIntent = Intent(this, MainActivity::class.java)
         activityIntent.action = Intent.ACTION_MAIN
         activityIntent.addCategory(Intent.CATEGORY_LAUNCHER)
@@ -81,7 +78,7 @@ class StatusService : Service() {
             .setShowWhen(true)
             .addAction(R.drawable.ic_stop, getString(R.string.stop), stopPendingIntent)
 
-        builder.build()
+        return builder.build()
     }
 
     override fun onCreate() {
@@ -104,6 +101,7 @@ class StatusService : Service() {
         LocalBroadcastManager.getInstance(applicationContext)
             .registerReceiver(_actionReceiver, IntentFilter(ACTION_GENERIC))
 
+        startForeground(NOTIFICATION_ID, buildNotification())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -112,7 +110,7 @@ class StatusService : Service() {
         if (intent?.getIntExtra(EXTRA_STOP, 0) == 1) {
             stop()
         } else {
-            startForeground(NOTIFICATION_ID, _notification)
+            _token = intent?.getStringExtra(EXTRA_TOKEN)
             startStatusPolling()
         }
         return START_NOT_STICKY
@@ -247,6 +245,7 @@ class StatusService : Service() {
         const val ACTION_STATUS_UPDATE = "${P}.action.status_update"
         const val ACTION_GENERIC = "${P}.action.generic"
 
+        const val EXTRA_TOKEN = "${P}.extra.token"
         const val EXTRA_STOP = "${P}.extra.stop"
         const val EXTRA_STATUS = "${P}.extra.status"
         const val EXTRA_DATE = "${P}.extra.date"
