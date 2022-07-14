@@ -18,12 +18,14 @@ import app.ronzano.zensino.R
 import app.ronzano.zensino.extensions.log
 import app.ronzano.zensino.extensions.loge
 import app.ronzano.zensino.models.SensorState
-import app.ronzano.zensino.ui.FloatingPopupView
+import app.ronzano.zensino.ui.FloatingAlarmPopupView
+import app.ronzano.zensino.ui.FloatingGenericPopupView
 import app.ronzano.zensino.ui.MainActivity
 import app.ronzano.zensino.webservices.Constants
 import app.ronzano.zensino.webservices.ZensiRepository
 import app.ronzano.zensino.webservices.models.StatusResponse
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -32,14 +34,19 @@ class StatusService : Service() {
     private var _token: String? = null
     private var _notificationManager: NotificationManager? = null
     private val _binder: IBinder = LocalBinder()
-    private var timerJob: Job? = null
+    private var _timerJob: Job? = null
     private val _job = SupervisorJob()
-    private val scope = CoroutineScope(Dispatchers.IO + _job)
-    private val repo by lazy { ZensiRepository(Constants.API_ENDPOINT) }
-    private var _alertPopup: FloatingPopupView? = null
+    private val _scope = CoroutineScope(Dispatchers.IO + _job)
+    private val _repo by lazy { ZensiRepository(Constants.API_ENDPOINT) }
+    private var _alertPopup: FloatingAlarmPopupView? = null
+    private var _genericAlertPopup: FloatingGenericPopupView? = null
     private var _pollingIntervalSecs = Consts.DEFAULT_POLLING_INTERVAL_SECS
 
     private var _sensorsMap = HashMap<String, SensorState>()
+
+    private var _lastShownPopupId: Int? = null
+    private var _lastDismissedPopupId: Int? = null
+    private var _disconnectionTime: Long? = null
 
     private var _actionReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -51,6 +58,9 @@ class StatusService : Service() {
                         _sensorsMap[sensorId] = SensorState(false, snoozedUntil)
                         log(sensorId, "has been snoozed")
                     }
+                }
+                ACTIONS.DISMISS_POPUP.name -> {
+                    _lastDismissedPopupId = intent.getIntExtra(EXTRA_POPUP_ID, 0)
                 }
             }
         }
@@ -118,13 +128,15 @@ class StatusService : Service() {
 
     private fun startStatusPolling() {
         log("startStatusPolling")
-        timerJob?.cancel()
-        timerJob = scope.launch(Dispatchers.IO) {
+        _timerJob?.cancel()
+        _timerJob = _scope.launch(Dispatchers.IO) {
             while (true) {
                 delay(_pollingIntervalSecs * 1000)
                 _token?.let { token ->
                     try {
-                        val response = repo.status(token)
+                        val response = _repo.status(token)
+//                        _lastDismissedPopupId =
+//                            null //TODO: this popup il only for disconnection alerts
                         _lastStatus = response
                         _lastUpdateTime = Date().time
                         //Update polling interval
@@ -156,15 +168,41 @@ class StatusService : Service() {
                             }
                         }
 //                        log(response)
-                        val intent = Intent(ACTION_STATUS_UPDATE)
-                        intent.putExtra(EXTRA_STATUS, _lastStatus)
-                        intent.putExtra(EXTRA_DATE, _lastUpdateTime)
-                        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+                        notifyApp()
                     } catch (e: Exception) {
                         loge(e)
 //                    model.error.value = e.localizedMessage ?: getString(R.string.error)
                     } finally {
+                        checkDisconnectionTimeout()
                     }
+                }
+            }
+        }
+    }
+
+    private fun checkDisconnectionTimeout() {
+        _lastUpdateTime?.let { t ->
+            if (Date().time - t > Consts.DEFAULT_DISCONNECTION_TIMEOUT_SECS * 1000) {
+                if (!(_lastShownPopupId == ID_POPUP_DISCONNECTED || _lastDismissedPopupId == ID_POPUP_DISCONNECTED)) {
+                    _lastShownPopupId = ID_POPUP_DISCONNECTED
+                    _disconnectionTime = Date().time
+                    showGenericPopup(
+                        id = ID_POPUP_DISCONNECTED,
+                        title = getString(R.string.disconnected_title),
+                        message = getString(R.string.disconnected_message)
+                    )
+                }
+            } else {
+                if (_lastShownPopupId == ID_POPUP_DISCONNECTED && _disconnectionTime != null) {
+                    _lastShownPopupId = ID_POPUP_RECONNECTED
+                    val df = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                    val from = df.format(Date().also { it.time = _disconnectionTime!! })
+                    val to = df.format(Date().also { it.time = t })
+                    showGenericPopup(
+                        id = ID_POPUP_RECONNECTED,
+                        title = getString(R.string.temporary_disconnected_title),
+                        message = getString(R.string.temporary_disconnected_message, from, to)
+                    )
                 }
             }
         }
@@ -176,39 +214,50 @@ class StatusService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        log("Service onBind()")
-//        stopForeground(true)
         return _binder
     }
 
     override fun onRebind(intent: Intent) {
-        log("Service onRebind()")
-//        stopForeground(true)
         super.onRebind(intent)
     }
 
     override fun onUnbind(intent: Intent): Boolean {
-        log("Service Last client unbound from service")
-//        log("Service Starting foreground service")
-//        startForeground(NOTIFICATION_ID, notification)
-        return true // Ensures onRebind() is called when a client re-binds.
-    }
-
-    fun setToken(token: String?) {
-        _token = token
+        return true
     }
 
     private fun showAlertPopup(sensor: StatusResponse.SensorData) {
-        scope.launch(Dispatchers.Main) {
+        _scope.launch(Dispatchers.Main) {
             if (_alertPopup == null) {
-                _alertPopup = FloatingPopupView(applicationContext)
+                _alertPopup = FloatingAlarmPopupView(applicationContext)
             }
             _alertPopup!!.show(sensor)
             wakeUp()
         }
     }
 
+    private fun showGenericPopup(id: Int, title: String, message: String) {
+        _scope.launch(Dispatchers.Main) {
+            if (_genericAlertPopup == null) {
+                _genericAlertPopup = FloatingGenericPopupView(applicationContext)
+            }
+            _genericAlertPopup!!.show(
+                id = id,
+                title = title,
+                message = message
+            )
+            wakeUp()
+        }
+    }
+
+    private fun notifyApp() {
+        val intent = Intent(ACTION_STATUS_UPDATE)
+        intent.putExtra(EXTRA_STATUS, _lastStatus)
+        intent.putExtra(EXTRA_DATE, _lastUpdateTime)
+        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+    }
+
     //TODO: MOVE
+    @Suppress("deprecation")
     private fun wakeUp() {
         val pm = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = pm.newWakeLock(
@@ -225,7 +274,7 @@ class StatusService : Service() {
 
     override fun onDestroy() {
         log("service destroy")
-        timerJob?.cancel()
+        _timerJob?.cancel()
         super.onDestroy()
     }
 
@@ -234,7 +283,7 @@ class StatusService : Service() {
             get() = this@StatusService
     }
 
-    enum class ACTIONS { SNOOZE }
+    enum class ACTIONS { SNOOZE, DISMISS_POPUP }
 
     companion object {
         fun getLastStatus(): Pair<StatusResponse?, Long?> {
@@ -252,13 +301,15 @@ class StatusService : Service() {
         const val EXTRA_ACTION = "${P}.extra.action"
         const val EXTRA_SENSOR_ID = "${P}.extra.sensor_id"
         const val EXTRA_SNOOZED_UNTIL = "${P}.extra.snoozed_until"
-
-//        private const val EXTRA_STARTED_FROM_NOTIFICATION = "${P}}.extra.started_from_notification"
+        const val EXTRA_POPUP_ID = "${P}.extra.popup_id"
 
         private const val NOTIFICATION_ID = 68987774
 
         private var _lastStatus: StatusResponse? = null
         private var _lastUpdateTime: Long? = null
+
+        private const val ID_POPUP_DISCONNECTED = 100
+        private const val ID_POPUP_RECONNECTED = 200
 
     }
 }

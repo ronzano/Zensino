@@ -43,14 +43,9 @@ class DashboardFragment : Fragment() {
     private lateinit var binding: FragmentDashboardBinding
     private val mainModel: MainViewModel by activityViewModels()
     private val _statusReceiver = StatusReceiver()
-//    private var _statusService: StatusService? = null
-
-//    private val model: DashboardViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        activity?.actionBar?.hide()
-//        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
     override fun onCreateView(
@@ -61,14 +56,12 @@ class DashboardFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.hide()
         return FragmentDashboardBinding.inflate(inflater, container, false).also {
             binding = it
-//            it.model = model
             it.lifecycleOwner = this
         }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        binding.buttonLogout.debounceClickListener { logout() }
         val repo = ZensiRepository(Constants.API_ENDPOINT)
 
         lifecycleScope.launch {
@@ -95,25 +88,6 @@ class DashboardFragment : Fragment() {
         findNavController().setGraph(R.navigation.nav_graph_main)
     }
 
-
-//    private val _statusServiceConnection: ServiceConnection = object : ServiceConnection {
-//        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-//            val binder: StatusService.LocalBinder = service as StatusService.LocalBinder
-//            _statusService = binder.service
-//            _statusService?.setToken(mainModel.token)
-//            val intent = Intent(context, StatusService::class.java)
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-//                _statusService?.startForegroundService(intent)
-//            else
-//                _statusService?.startService(intent)
-////            _statusService?.startForegroundService()
-//        }
-//
-//        override fun onServiceDisconnected(name: ComponentName) {
-//            _statusService = null
-//        }
-//    }
-
     fun startStatusService() {
         val intent = Intent(context, StatusService::class.java)
         intent.putExtra(StatusService.EXTRA_TOKEN, mainModel.token)
@@ -127,11 +101,6 @@ class DashboardFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         startStatusService()
-//        requireActivity().bindService(
-//            Intent(requireContext(), StatusService::class.java),
-//            _statusServiceConnection,
-//            AppCompatActivity.BIND_AUTO_CREATE
-//        )
     }
 
     override fun onResume() {
@@ -147,7 +116,6 @@ class DashboardFragment : Fragment() {
     }
 
     override fun onStop() {
-//        requireActivity().unbindService(_statusServiceConnection)
         super.onStop()
     }
 
@@ -163,7 +131,6 @@ class DashboardFragment : Fragment() {
 
     private inner class StatusReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-//            Snackbar.make(requireView(), status.toString(), Snackbar.LENGTH_SHORT).show()
             val status = intent.getParcelableExtra<StatusResponse>(StatusService.EXTRA_STATUS)
             val date = intent.getLongExtra(StatusService.EXTRA_DATE, 0)
             updateStatus(status, date)
@@ -209,7 +176,7 @@ class DashboardFragment : Fragment() {
                                 sensorTile = SensorTile(requireContext()).apply {
                                     id = generateViewId()
                                     tag = sensor.padId
-                                    binding.containerSensors.addView(this, 120.px, 120.px)
+                                    binding.containerSensors.addView(this, 100.px, 100.px)
                                     (layoutParams as? ViewGroup.MarginLayoutParams)?.updateMargins(
                                         top = context.resources.getDimensionPixelSize(R.dimen.margin_half),
                                         left = context.resources.getDimensionPixelSize(R.dimen.margin_half),
@@ -230,7 +197,6 @@ class DashboardFragment : Fragment() {
                                 }
                             }
                             sensorTile.sensor = sensor
-//                            sensorTile.displayName = sensor.displayName
                             status.buttonStatusColors?.get(sensor.status)?.let {
                                 sensorTile.setStatusColor(it)
                             }

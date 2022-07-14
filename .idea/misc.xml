@@ -23,6 +23,8 @@
         <entry key="app/src/main/res/drawable/sensor_not_triggered.xml" value="0.203" />
         <entry key="app/src/main/res/drawable/sensor_triggered.xml" value="0.203" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/floating_generic_popup.xml" value="0.25729166666666664" />
+        <entry key="app/src/main/res/layout/floating_popup.xml" value="0.25729166666666664" />
         <entry key="app/src/main/res/layout/fragment_calibrate_1.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_calibrate_2.xml" value="0.19479166666666667" />
         <entry key="app/src/main/res/layout/fragment_calibrate_3.xml" value="0.19479166666666667" />

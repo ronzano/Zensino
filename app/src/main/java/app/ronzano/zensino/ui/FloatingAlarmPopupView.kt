@@ -16,7 +16,7 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class FloatingPopupView(private val mContext: Context) : FrameLayout(mContext) {
+class FloatingAlarmPopupView(private val mContext: Context) : FrameLayout(mContext) {
     private lateinit var _windowManager: FloatingManager
     private var _params: WindowManager.LayoutParams? = null
     private var _title: TextView? = null
@@ -32,7 +32,7 @@ class FloatingPopupView(private val mContext: Context) : FrameLayout(mContext) {
 
     private fun initView() {
         _view = LayoutInflater.from(ContextThemeWrapper(context, R.style.Theme_Zensino))
-            .inflate(R.layout.floating_popup, null)
+            .inflate(R.layout.floating_alarm_popup, null)
         _windowManager = FloatingManager.getInstance(mContext)
         _title = _view.findViewById(R.id.title)
         _time = _view.findViewById(R.id.time)
@@ -57,33 +57,6 @@ class FloatingPopupView(private val mContext: Context) : FrameLayout(mContext) {
                 return
             }
             _currentSensor = sensor
-
-            _params = WindowManager.LayoutParams()
-            _params?.apply {
-                gravity = Gravity.CENTER
-                //Always appears above the application window
-                type = if (Build.VERSION.SDK_INT >= 26) {
-                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-                } else {
-                    WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
-                }
-                //Format the picture so that the background is transparent
-                format = PixelFormat.RGBA_8888
-
-                flags =
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
-                            WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-//                or
-//                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-
-                width = LayoutParams.WRAP_CONTENT
-                height = LayoutParams.WRAP_CONTENT
-                if (_view.isAttachedToWindow) {
-                    _windowManager.removeView(_view)
-                }
-                _windowManager.addView(_view, this)
-            }
             _title?.text =
                 context.getString(R.string.popup_title, sensor.sensor.displayName, sensor.counter)
             _time?.text = sensor.sensor.latestAlertTriggeredTimestamp?.let {
@@ -96,7 +69,38 @@ class FloatingPopupView(private val mContext: Context) : FrameLayout(mContext) {
                     "NA"
                 }
             } ?: "-"
+            showPopup()
+        }
 //                DateFormat.getDateTimeInstance().format(Date())
+    }
+
+    @Suppress("deprecation")
+    private fun showPopup() {
+        _params = WindowManager.LayoutParams()
+        _params?.apply {
+            gravity = Gravity.CENTER
+            //Always appears above the application window
+            type = if (Build.VERSION.SDK_INT >= 26) {
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            } else {
+                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+            }
+            //Format the picture so that the background is transparent
+            format = PixelFormat.RGBA_8888
+
+            flags =
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
+                        WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+//                or
+//                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+
+            width = LayoutParams.WRAP_CONTENT
+            height = LayoutParams.WRAP_CONTENT
+            if (_view.isAttachedToWindow) {
+                _windowManager.removeView(_view)
+            }
+            _windowManager.addView(_view, this)
         }
 
     }

@@ -57,6 +57,13 @@
     <string name="title_displayname">Display name</string>
     <string name="title_monitor_enabled">Monitor</string>
 
+    <!-- Strings related to Disconnection -->
+
+    <string name="disconnected_message">"Please be aware that you will not receive notifications until you are back in the range of your WIFI network. "</string>
+    <string name="disconnected_title">Lost connection Zensi is paused until internet connection is restored</string>
+    <string name="temporary_disconnected_title">Internet connection was temporarily lost</string>
+    <string name="temporary_disconnected_message">Please be aware that notifications were paused from %s to %s</string>
+
     <!-- Strings related to Settings -->
 
     <string name="key_sound" translatable="false">sound</string>
