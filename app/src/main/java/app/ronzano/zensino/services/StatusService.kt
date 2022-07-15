@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.ronzano.zensino.Consts
 import app.ronzano.zensino.R
+import app.ronzano.zensino.Vibrator
 import app.ronzano.zensino.extensions.log
 import app.ronzano.zensino.extensions.loge
 import app.ronzano.zensino.models.SensorState
@@ -236,6 +237,7 @@ class StatusService : Service() {
     }
 
     private fun showGenericPopup(id: Int, title: String, message: String) {
+        Vibrator.vibrate(2000)
         _scope.launch(Dispatchers.Main) {
             if (_genericAlertPopup == null) {
                 _genericAlertPopup = FloatingGenericPopupView(applicationContext)

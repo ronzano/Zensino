@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.ronzano.zensino.R
+import app.ronzano.zensino.Vibrator
 import app.ronzano.zensino.services.StatusService
 import app.ronzano.zensino.webservices.models.StatusResponse
 import java.text.DateFormat
@@ -117,6 +118,7 @@ class FloatingAlarmPopupView(private val mContext: Context) : FrameLayout(mConte
     }
 
     fun show(triggeredSensor: StatusResponse.SensorData) {
+        Vibrator.vibrate(2000)
         _sensors.find { s -> triggeredSensor.padId == s.sensor.padId }.let { s ->
             if (s == null)
                 _sensors.add(Sensor(triggeredSensor))
